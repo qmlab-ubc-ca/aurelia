@@ -1,0 +1,286 @@
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import numpy as np
+
+class show_spectra:
+    def __init__(self):
+        pass
+    def Make_spec_plot(spec, constE=None):
+        B=spec.bands
+        if spec.dimension=='sliceEk':
+            # Display the spectrogram with imagesc
+            KX, OM = np.meshgrid(spec.kax, spec.Omega)
+            plt.pcolormesh(KX, OM, spec.specfun, cmap='gray_r')
+            plt.colorbar()
+            # Plot the bands with red dashed line
+            plt.plot(B.kpath[spec.slice_ind,0], B.bands[spec.slice_ind,:], 'r--', linewidth=1)
+            plt.axhline(y=0, linestyle='--', linewidth=1, color='black')
+            plt.ylabel('E-E_F (eV)')
+            plt.xlabel('kx')
+            plt.title('Spec. Fun.')
+        
+        elif spec.dimension=='slicekk':
+            KY, KX = np.meshgrid(spec.kay, spec.kax)
+            plt.pcolormesh(KX, KY, spec.specfun[0,:,:], cmap='gray_r')
+            plt.colorbar()
+            plt.xlabel('kx')
+            plt.ylabel('ky')
+            plt.title('Spec. Fun.')
+
+        elif spec.dimension=='cube':
+            Evk = B.bands.reshape((B.Npts[1], B.Npts[0], B.bands.shape[1]))
+
+            fig = plt.figure()
+            gs = gridspec.GridSpec(3, 3)
+            ax = fig.add_subplot(gs[1:3, 2:3])
+            OM, KY=np.meshgrid(spec.Omega, spec.kay)
+            ax.pcolormesh(OM, KY, spec.specfun[:,round(B.Npts[0]/2),:].T, cmap='gray_r')
+            ax.plot(Evk[:,round(B.Npts[0]/2),:], spec.kay, 'r--', linewidth=1)
+            k = plt.axhline(0, linestyle='--', linewidth=1, color='black')
+            plt.xlabel('E-E_F (eV)')
+
+            ax = fig.add_subplot(gs[0, 0:2])
+            KX,OM=np.meshgrid(spec.kax, spec.Omega)
+            ax.pcolormesh(KX, OM, spec.specfun[:,:,round(B.Npts[1]/2)], cmap='gray_r')
+            ax.plot(spec.kax, Evk[round(B.Npts[1]/2),:,:], 'r--', linewidth=1)
+            plt.axhline(y=0, linestyle='--', linewidth=1, color='black')
+            plt.ylabel('E-E_F (eV)')
+
+            ax = fig.add_subplot(gs[1:3, 0:2])
+            if constE is None:
+                indEF = np.where(spec.Omega >= 0)[0][0]
+            else:
+                indEF = np.where(spec.Omega >= constE)[0][0]
+            KY, KX=np.meshgrid(spec.kay, spec.kax)
+            ax.pcolormesh(KX, KY, spec.specfun[indEF,:,:], cmap='gray_r')
+            plt.axhline(0, linestyle='--', linewidth=1, color='red')
+            plt.axvline(0, linestyle='--', linewidth=1, color='red')
+            plt.xlabel('kx')
+            plt.ylabel('ky')
+        # Show the plot
+        plt.show()
+
+    def Make_arpes_plot(arpes, exp):
+        B=arpes.spec.bands
+        if arpes.dimension=='sliceEk':
+            indEF = np.where(arpes.spec.Omega >= 0)[0][0]
+            TH, EK = np.meshgrid(np.degrees(arpes.th), arpes.Ek)
+            plt.pcolormesh(TH, EK, arpes.intensity, cmap='gray_r')
+            plt.colorbar()
+            plt.axhline(y=arpes.Ek[indEF], linestyle='--', linewidth=1, color='black')
+            plt.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='black')
+            plt.ylabel('Ek (eV)')
+            plt.xlabel('theta')
+            plt.title('ARPES')
+        elif arpes.dimension=='slicekk':
+            PH, TH = np.degrees(np.meshgrid(arpes.ph, arpes.th))
+            th=np.degrees(arpes.th)
+            plt.pcolormesh(TH, PH, arpes.intensity[0,:,:], cmap='gray_r')
+            plt.axhline(y=-np.rad2deg(exp.ph0), linestyle='--', linewidth=1, color='red')
+            plt.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='red')
+            plt.plot(th-np.rad2deg(exp.th0),-np.sin(exp.az0)/np.cos(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            plt.plot(th-np.rad2deg(exp.th0), np.cos(exp.az0)/np.sin(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            plt.colorbar()
+            plt.xlim(TH.min(), TH.max())
+            plt.ylim(PH.min(), PH.max())
+            plt.title('ARPES')
+        elif arpes.dimension=='cube':
+            fig = plt.figure()
+            gs = gridspec.GridSpec(3, 3)
+            ax = fig.add_subplot(gs[1:3, 2:3])
+            EK, PH=np.meshgrid(arpes.Ek, np.degrees(arpes.ph))
+            ax.pcolormesh(EK, PH, arpes.intensity[:,round(B.Npts[0]/2),:].T, cmap='gray_r')
+            plt.axhline(y=np.rad2deg(exp.ph0), linestyle='--', linewidth=1, color='red')
+            plt.axis('tight')
+            plt.ylim(PH.min(), PH.max())
+            plt.set_cmap('gray_r')
+            plt.xlabel('Ek (eV)')
+
+            ax = fig.add_subplot(gs[0, 0:2])
+            TH,EK=np.meshgrid(np.degrees(arpes.th), arpes.Ek)
+            ax.pcolormesh(TH, EK, arpes.intensity[:,:,round(B.Npts[1]/2)], cmap='gray_r')
+            ax.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='red')
+            plt.set_cmap('gray_r')
+            plt.ylabel('E-E_F (eV)')
+            plt.xlim(TH.min(), TH.max())
+
+            ax = fig.add_subplot(gs[1:3, 0:2])
+            indEF = np.where(arpes.spec.Omega >= 0)[0][0]
+            PH, TH=np.degrees(np.meshgrid(arpes.ph, arpes.th))
+            th=np.degrees(arpes.th)
+            ax.pcolormesh(TH, PH, arpes.intensity[indEF,:,:], cmap='gray_r')
+            plt.xlim(TH.min(), TH.max())
+            plt.ylim(PH.min(), PH.max())
+            plt.axhline(y=-np.rad2deg(exp.ph0), linestyle='--', linewidth=1, color='red')
+            plt.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='red')
+            ax.plot(th-np.rad2deg(exp.th0),-np.sin(exp.az0)/np.cos(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            ax.plot(th-np.rad2deg(exp.th0), np.cos(exp.az0)/np.sin(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            plt.xlabel('theta')
+            plt.ylabel('phi')
+        # Show the plot
+        plt.show()
+
+    def Make_flake_plot(arpes, exp, domain):
+        B=arpes.spec.bands
+        if arpes.dimension=='sliceEk':
+            fig = plt.figure()
+            TH, EK = np.meshgrid(np.degrees(arpes.th), arpes.Ek)
+            indEF = np.where(arpes.spec.Omega >= 0)[0][0]
+            gs = gridspec.GridSpec(1, 2)
+            ax = fig.add_subplot(gs[0,0])
+            ax.pcolormesh(TH, EK, arpes.dintensity, cmap='gray_r')
+            plt.axhline(y=arpes.Ek[indEF], linestyle='--', linewidth=1, color='black')
+            plt.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='black')
+            plt.ylabel('Ek (eV)')
+            plt.xlabel('theta')
+            plt.title('ARPES')
+
+            ax = fig.add_subplot(gs[0,1])    
+            ax.pcolormesh(TH, EK, arpes.domain, cmap='gray_r')
+            plt.axhline(y=arpes.Ek[indEF], linestyle='--', linewidth=1, color='black')
+            plt.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='black')
+            plt.ylabel('Ek (eV)')
+            plt.xlabel('theta')
+            plt.title('ARPES + flakes')
+            for i in range(domain.flake_N):
+                plt.axvline(x=np.rad2deg(-exp.th0-domain.flake_th[i]), linestyle='--', linewidth=1, color='green')
+            # Add axis labels and title
+            plt.ylabel('Ek (eV)')
+            plt.xlabel('theta')
+        elif arpes.dimension=='slicekk':
+            fig = plt.figure()
+            PH, TH = np.degrees(np.meshgrid(arpes.ph, arpes.th))
+            th=np.degrees(arpes.th)
+            gs = gridspec.GridSpec(1, 2)
+            ax = fig.add_subplot(gs[0,0])
+            ax.pcolormesh(TH, PH, arpes.dintensity[0,:,:], cmap='gray_r')
+            plt.axhline(y=-np.rad2deg(exp.ph0), linestyle='--', linewidth=1, color='red')
+            plt.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='red')
+            plt.plot(th-np.rad2deg(exp.th0),  np.sin(exp.az0)/np.cos(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            plt.plot(th-np.rad2deg(exp.th0), -np.cos(exp.az0)/np.sin(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            plt.colorbar()
+            plt.xlim(TH.min(), TH.max())
+            plt.ylim(PH.min(), PH.max())
+            plt.title('ARPES')
+
+            ax = fig.add_subplot(gs[0,1])
+            ax.pcolormesh(TH, PH, arpes.domain[0,:,:], cmap='gray_r')
+            plt.axhline(y=-np.rad2deg(exp.ph0), linestyle='--', linewidth=1, color='red')
+            plt.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='red')
+            plt.plot(th-np.rad2deg(exp.th0),  np.sin(exp.az0)/np.cos(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            plt.plot(th-np.rad2deg(exp.th0), -np.cos(exp.az0)/np.sin(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            for i in range(domain.flake_N):
+                plt.axvline(x=np.rad2deg(-exp.th0-domain.flake_th[i]), linestyle='--', linewidth=1, color='green')
+                plt.axhline(y=np.rad2deg(-exp.ph0-domain.flake_ph[i]), linestyle='--', linewidth=1, color='green')
+            plt.xlim(TH.min(), TH.max())
+            plt.ylim(PH.min(), PH.max())
+            plt.title('ARPES + flakes')
+        elif arpes.dimension=='cube':
+            fig = plt.figure()
+            gs = gridspec.GridSpec(3, 3)
+            ax = fig.add_subplot(gs[1:3, 2:3])
+            EK, PH=np.meshgrid(arpes.Ek, np.degrees(arpes.ph))
+            ax.pcolormesh(EK, PH, arpes.domain[:,round(B.Npts[0]/2),:].T, cmap='gray_r')
+            plt.axhline(y=np.rad2deg(exp.ph0), linestyle='--', linewidth=1, color='red')
+            for i in range(domain.flake_N):
+                plt.axhline(y=np.rad2deg(-exp.ph0-domain.flake_ph[i]), linestyle='--', linewidth=1, color='green')
+            plt.axis('tight')
+            plt.ylim(PH.min(), PH.max())
+            plt.set_cmap('gray_r')
+            plt.xlabel('Ek (eV)')
+           
+            ax = fig.add_subplot(gs[0, 0:2])
+            TH,EK=np.meshgrid(np.degrees(arpes.th), arpes.Ek)
+            ax.pcolormesh(TH, EK, arpes.domain[:,:,round(B.Npts[1]/2)], cmap='gray_r')
+            ax.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='red')
+            for i in range(domain.flake_N):
+                plt.axvline(x=np.rad2deg(-exp.th0-domain.flake_th[i]), linestyle='--', linewidth=1, color='green')
+            plt.ylabel('E-E_F (eV)')
+            plt.xlim(TH.min(), TH.max())
+        
+            ax = fig.add_subplot(gs[1:3, 0:2])
+            indEF = np.where(arpes.spec.Omega >= 0)[0][0]
+            PH, TH=np.degrees(np.meshgrid(arpes.ph, arpes.th))
+            th=np.degrees(arpes.th)
+            ax.pcolormesh(TH, PH, arpes.domain[indEF,:,:], cmap='gray_r')
+            plt.xlim(TH.min(), TH.max())
+            plt.ylim(PH.min(), PH.max())
+            plt.axhline(y=-np.rad2deg(exp.ph0), linestyle='--', linewidth=1, color='red')
+            plt.axvline(x=-np.rad2deg(exp.th0), linestyle='--', linewidth=1, color='red')
+            for i in range(domain.flake_N):
+                plt.axvline(x=np.rad2deg(-exp.th0-domain.flake_th[i]), linestyle='--', linewidth=1, color='green')
+                plt.axhline(y=np.rad2deg(-exp.ph0-domain.flake_ph[i]), linestyle='--', linewidth=1, color='green')
+            ax.plot(th-np.rad2deg(exp.th0),-np.sin(exp.az0)/np.cos(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            ax.plot(th-np.rad2deg(exp.th0), np.cos(exp.az0)/np.sin(exp.az0)*th-np.rad2deg(exp.ph0), 'r-', linewidth=1)
+            plt.xlabel('theta')
+            plt.ylabel('phi')
+        # Show the plot
+        plt.show()
+
+    def Make_stats_plot(arpes):
+        if arpes.dimension=='sliceEk':
+            indEF = np.where(arpes.spec.Omega >= 0)[0][0]
+            TH, EK = np.meshgrid(np.degrees(arpes.th), arpes.Ek)
+            if hasattr(arpes, 'dstats') == True:
+                fig = plt.figure()
+                gs = gridspec.GridSpec(1, 2)
+                ax = fig.add_subplot(gs[0,0])
+                ax.pcolormesh(TH, EK, arpes.stats, cmap='gray_r')
+                plt.axhline(y=arpes.Ek[indEF], linestyle='--', linewidth=1, color='black')
+
+                dTH, EK = np.meshgrid(np.degrees(arpes.th), arpes.Ek)
+                ax = fig.add_subplot(gs[0,1])
+                ax.pcolormesh(dTH, EK, arpes.dstats, cmap='gray_r')
+            elif hasattr(arpes, 'dstats') == False:
+                plt.pcolormesh(TH, EK, arpes.stats, cmap='gray_r')
+                plt.colorbar()
+            plt.axhline(y=arpes.Ek[indEF], linestyle='--', linewidth=1, color='black')
+            plt.ylabel('Ek (eV)')
+            plt.xlabel('theta')
+            plt.title('ARPES statistics')
+        elif arpes.dimension=='slicekk':
+            PH, TH = np.degrees(np.meshgrid(arpes.ph, arpes.th))
+            if hasattr(arpes, 'dstats') == True:
+                fig = plt.figure()
+                gs = gridspec.GridSpec(1, 2)
+                ax = fig.add_subplot(gs[0,0])
+                ax.pcolormesh(TH, PH, arpes.stats[0,:,:], cmap='gray_r')
+
+                dPH, dTH = np.degrees(np.meshgrid(arpes.ph, arpes.th))
+                ax = fig.add_subplot(gs[0,1])
+                ax.pcolormesh(dTH, dPH, arpes.dstats[0,:,:], cmap='gray_r')
+            elif hasattr(arpes, 'dstats') == False:
+                plt.pcolormesh(TH, PH, arpes.stats[0,:,:], cmap='gray_r')
+            plt.xlim(TH.min(), TH.max())
+            plt.ylim(PH.min(), PH.max())
+            plt.title('ARPES statistics')
+        elif arpes.dimension=='cube':         
+            fig = plt.figure()
+            gs = gridspec.GridSpec(3, 3)
+            ax = fig.add_subplot(gs[1:3, 2:3])
+            EK, PH=np.meshgrid(arpes.Ek, np.degrees(arpes.ph))
+            ax.pcolormesh(EK, PH, arpes.stats[:,round(len(arpes.th)/2),:].T, cmap='gray_r')
+            plt.axis('tight')
+            plt.ylim(PH.min(), PH.max())
+            plt.set_cmap('gray_r')
+            plt.xlabel('Ek (eV)')
+
+            ax = fig.add_subplot(gs[0, 0:2])
+            TH,EK=np.meshgrid(np.degrees(arpes.th), arpes.Ek)
+            ax.pcolormesh(TH, EK, arpes.stats[:,:,round(len(arpes.ph)/2)], cmap='gray_r')
+            plt.set_cmap('gray_r')
+            plt.ylabel('E-E_F (eV)')
+            plt.xlim(TH.min(), TH.max())
+
+            ax = fig.add_subplot(gs[1:3, 0:2])
+            indEF = np.where(arpes.spec.Omega >= 0)[0][0]
+            PH, TH=np.degrees(np.meshgrid(arpes.ph, arpes.th))
+            ax.pcolormesh(TH, PH, arpes.stats[indEF,:,:], cmap='gray_r')
+            plt.xlim(TH.min(), TH.max())
+            plt.ylim(PH.min(), PH.max())
+            plt.xlabel('theta')
+            plt.ylabel('phi')
+        # Show the plot
+        plt.show()
+
+
