@@ -1,6 +1,8 @@
 #%%
+import os
+import sys
 import numpy as np
-import matplotlib.pyplot as plt
+sys.path.insert(0, os.path.abspath("..") + "\\aurelia")
 from aurelia_arpes import Bands, Spec, ARPES
 from aurelia_static_vars import mod, domain, experiment
 #from init_static import save_h5 as save

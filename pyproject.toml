@@ -22,4 +22,4 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/qmlab-ubc-ca/aurelia"
-Documentation = "#"
+Documentation = "https://github.com/qmlab-ubc-ca/aurelia/wiki"
