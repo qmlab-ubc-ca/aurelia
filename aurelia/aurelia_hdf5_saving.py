@@ -94,32 +94,4 @@ def save_class_to_hdf5(obj,folderpath, filename, groupname=None):
                     save_class_to_hdf5(attr_value, folderpath,filename, groupname=sub_group.name)
 
 
-#%%
 
-class sub_sub_int_test:
-    jaja =54
-    def __init__(self) -> None:
-        pass
-class sub_unit_test:
-    kaboom='lk'
-    def __init__(self):
-        self.baboom = sub_sub_int_test()
-        pass
-    def changekabook():
-        kaboom+='g'
-      
-
-class unit_test:
-    gg=0
-    kk=9
-    yy='hg'
-    ny = np.array([8,4,5])
-    kaka=sub_unit_test()
-    def __init__(self):
-        pass
-
-#%%
-def test():
-    unit = unit_test()
-    save_class_to_hdf5(unit,'C:\\Users\\matte\\OneDrive\\Work\\Programs\\Anchovy','test4.h5')
-# %%
