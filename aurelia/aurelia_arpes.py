@@ -179,11 +179,10 @@ class Bands:
 #%%
 class Spec:
     # Calculates the spectral function, adds the Fermi-Dirac distribution, matrix elements and resolution broadening.
-    def __init__(self, bands, dimension=None, Omega=None, ME=None):
+    def __init__(self, bands, dimension=None, Omega=None):
         # bands are calculated by the Bands class. 
         # dimension can be 2D (slice) or 3D (cube). dimension = "slicekk" or "sliceEk" or "cube"
         # Omega the energy axis 
-        # ME: matrix eleement calculation type. ME = "poly" or "symm" or "rot" or any combination of the three
         if dimension==None:
             dim=['slicekk','cube','sliceEk']
             self.dimension=dim[np.random.randint(3)]
@@ -763,8 +762,10 @@ class ARPES:
               'az0:', round(np.degrees(self.exp.az0), 2))   
         if hasattr(self,'stats'):
             print('Number of electrons:', self.exp.Ne)
-            print('Flat bkgd amplitude:', round(self.exp.bkgd["flatA"],3),\
-                  '\nShirley bkgd amplitude:',round(self.exp.bkgd["shirA"],3)) 
+            if "flatA" in self.exp.bkgd:
+                print('Flat bkgd amplitude:', round(self.exp.bkgd["flatA"],3))
+            if "shirA" in self.exp.bkgd:
+                  print('Shirley bkgd amplitude:',round(self.exp.bkgd["shirA"],3)) 
 
 
                     
