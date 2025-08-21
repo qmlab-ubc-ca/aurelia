@@ -208,12 +208,12 @@ class Spec:
     def Make_self_energy(self, SE):
         Nbands=self.bands.bands.shape[1]
         if SE["type"] == 'FL':
-            if 'val' in SE:
-                self.ImS=np.matmul(np.reshape(self.Omega**2,[-1,1]), SE["val"])+SE["ImS0"]
-            else:
-                val=0.2*np.random.rand(1,Nbands)+0.05
-                self.ImS=np.matmul(np.reshape(self.Omega**2,[-1,1]), val)+0.01
-                SE["val"]=val    
+            if 'val' not in SE:                               
+                SE["val"]=0.2*np.random.rand(1,Nbands)+0.05   
+            if 'ImS0' not in SE:
+                SE["ImS0"] = 0.01
+            self.ImS=np.matmul(np.reshape(self.Omega**2,[-1,1]), SE["val"])+SE["ImS0"]    
+                
         elif SE["type"] == 'kink':
             if 'ImS' in SE:
                 ImS0=SE["ImS0"]
@@ -331,7 +331,6 @@ class Spec:
     def Make_matrix_elements(self, ME = None):
         # Specify matrix element type
         if ME is None:
-            #ME = {"type": np.array(['symm', 'poly'],dtype='U'), "polyN": np.random.randint(1,6)}
             ME = {"type": ['symm', 'poly'], "polyN": np.random.randint(1,6)}
         else:
             if 'polyN' not in ME:             
@@ -671,6 +670,8 @@ class ARPES:
                 self.stats = self.stats[ :, indth:-indth]
                 self.intensity = self.intensity[ :, indth:-indth]
                 self.domain = self.domain[ :, indth:-indth]
+                self.response = self.response[ :, indth:-indth]
+                self.bkgd = self.bkgd[ :, indth:-indth]
             elif self.dimension != "sliceEk":
                 indph=round(edge*self.intensity.shape[2])
                 self.ph=self.ph[indph:-indph]
@@ -678,6 +679,8 @@ class ARPES:
                 self.stats = self.stats[ :, indth:-indth, indph:-indph]
                 self.intensity = self.intensity[ :, indth:-indth, indph:-indph]
                 self.domain = self.domain[ :, indth:-indth, indph:-indph]
+                self.response = self.response[ :, indth:-indth, indph:-indph]
+                self.bkgd = self.bkgd[ :, indth:-indth, indph:-indph]
             self.dstats=dstats
             if exp.detector["counting mode"] == "ADC":
                 if self.dimension == "sliceEk":                
@@ -701,7 +704,10 @@ class ARPES:
     def Make_quality_score(self, param = None):
         score = 10
         kB = 8.6196e-05
-        p=(self.intensity+self.bkgd)*self.response
+        if hasattr(self, 'domain'):
+            p=(self.domain+self.bkgd)*self.response
+        else:
+            p=(self.intensity+self.bkgd)*self.response
         pbkgd=self.bkgd*self.response
         feature_score=np.sum(np.abs(np.diff(self.intensity)))/np.sum(self.intensity)
         spec=self.spec
