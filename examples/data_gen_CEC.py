@@ -2,6 +2,7 @@
 #This function generates constant-energy cut ARPES spectra from random bandstructures and epxerimental parameters.
 #The number of spectra generated is given by N_runs.
 #%%
+#Import libraries
 import os
 import sys
 import numpy as np
@@ -12,9 +13,11 @@ import matplotlib.pyplot as plt
 import aurelia_hdf5_saving as sv
 from aurelia_plots import show_spectra as sh
 
-# %%
+#%%
+#Define saving path
 path = os.path.join(".", "data_QS")
 os.makedirs("data_QS", exist_ok=True)
+#Define number of runs
 N_runs=1
 #Detector settings
 det={"response":'center', "sensitivity": np.random.uniform(0.5,1),\
@@ -38,8 +41,8 @@ for i in range(N_runs):
     B.Make_bands()
     B.print_variables()
     #Calculate spectra (in Eb and k)
-    spec=Spec(B, ME=ME_in, dimension='slicekk')
-    spec.Make_matrix_elements()
+    spec=Spec(B, dimension='slicekk')
+    spec.Make_matrix_elements(ME=ME_in)
     spec.Make_self_energy(SE)
     m=mod()
     spec.Make_specfun(m)

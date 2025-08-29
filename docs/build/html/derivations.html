@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Derivations &mdash; aurelia 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ARPES API" href="api.html" />
+    <link rel="prev" title="hdf5 saving module" href="save.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/aurelia_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">Static parameters module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plots.html">Plotting module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">hdf5 saving module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Derivations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#band-structure">Band Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#matrix-elements">Matrix elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#self-energy">Self-energy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#photoemission-intensity">Photoemission intensity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-probe-photon-energy">The probe photon energy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-momentum-to-angle-conversion">The momentum-to-angle conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-angle-to-momentum-check">The angle-to-momentum check</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">ARPES API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">aurelia</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Derivations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/derivations.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound">
+</div>
+<section id="derivations">
+<span id="id1"></span><h1>Derivations<a class="headerlink" href="#derivations" title="Link to this heading"></a></h1>
+<section id="band-structure">
+<h2>Band Structure<a class="headerlink" href="#band-structure" title="Link to this heading"></a></h2>
+<p>The tight-binding dispersions for the following lattices are given. The <span class="math notranslate nohighlight">\(E_\text{nn}\)</span> term is added if <code class="docutils literal notranslate"><span class="pre">self.warp</span> <span class="pre">=</span> <span class="pre">&quot;on&quot;</span></code></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation}
+    \begin{split}
+        \text{Square}: \quad E_\text{n}&amp;=E_0+2t[\cos(k_x a)+\cos(k_y a)]\\
+        \quad E_\text{nn}&amp;=rt[\cos(2k_x a)+\cos(2k_y a)]\\
+        \text{Rectangle}: \quad E_\text{n}&amp;=E_0+2t_1\cos(k_x a)+2t_2\cos(k_y b)]\\
+        \quad E_\text{nn}&amp;=E_0+rt_1\cos(2k_x a)+rt_2\cos(2k_y b)\\
+        \text{Hexagonal}: \quad E_\text{n}&amp;=E_0+2t[\cos(a/2(k_x+\sqrt{3}ky))+\\
+        &amp;\quad\quad\cos(a/2(k_x-\sqrt{3}ky))+\cos(k_x a)]\\
+        \quad E_\text{nn}&amp;=E_0+2rt[\cos(a/2(3k_x+\sqrt{3}ky))+\\
+        &amp;\quad\quad\cos(a/2(\sqrt{3}ky)-3kx)+\cos(\sqrt{3}k_y a)]\\
+        \text{Honeycomb}: \quad E_\text{n}&amp;=E_0\pm \\
+        &amp;\quad\quad t\sqrt{3+2\cos(\sqrt{3}k_x a)+4\cos(\sqrt{3}k_x a/2)\cos(3k_y a/2)}\\
+        \quad E_\text{nn}&amp;=2rt[\cos(a/2(\sqrt{3}k_x+3k_y))+\\
+        &amp;\quad\quad\cos(a/2(\sqrt{3}k_x-3k_y))+\cos(a\sqrt{3}k_x)]\\
+    \end{split}
+\end{equation}\end{split}\]</div>
+</section>
+<section id="matrix-elements">
+<h2>Matrix elements<a class="headerlink" href="#matrix-elements" title="Link to this heading"></a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">ME[&quot;type&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;symm&quot;</span></code>: The matrix elements the same symmetry as that of the tight-binding model, in that they are periodic in $k$-space in the same way. The equations are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation}
+    \begin{split}
+        \text{Square}: \quad M_n&amp;=t[\cos(k_x a)+\cos(k_y a)]+P(k_x, k_y)\\
+        \text{Rectangle}: \quad M_n&amp;=t_1\cos(k_x a)+2t_2\cos(k_y b)]+P(k_x, k_y)\\
+        \text{Hexagonal}: \quad M_n&amp;=t[\cos(a/2(k_x+\sqrt{3}ky))+\\
+        &amp;\quad\quad\cos(a/2(k_x-\sqrt{3}ky))+\cos(k_x a)]+P(k_x, k_y)\\
+        \text{Honeycomb}: \quad M_n&amp;=t\sqrt{3+2\cos(\sqrt{3}k_x a)+4\cos(\sqrt{3}k_x a/2)\cos(3k_y a/2)}+P(k_x, k_y)\\
+    \end{split}
+\end{equation}\end{split}\]</div>
+<p>Here, if <code class="docutils literal notranslate"><span class="pre">Bands.symmetry</span> <span class="pre">=</span> <span class="pre">&quot;custom&quot;</span></code> from imported bands, then this mode does not do anything.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">ME[&quot;type&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;rot&quot;</span></code>: The matrix elements give rotational symmetry, which mimics the orbital selectivity of linear and/or circularly polarized light. Here,</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}
+    \phi = \arctan\left(\frac{k_y}{k_x}\right), \quad M_\text{rot} = \cos(n\phi)
+\end{equation}\]</div>
+<p>If this mode is selected, then <span class="math notranslate nohighlight">\(n\)</span> (specified in the field <code class="docutils literal notranslate"><span class="pre">ME[&quot;rotN&quot;]</span></code>) gives the order of rotational symmetry. If <code class="docutils literal notranslate"><span class="pre">ME[&quot;rotN&quot;]</span></code> is not specified, then the order is randomly selected according to the rotational symmetry of the lattice defined in the tight-binding model:</p>
+<ul class="simple">
+<li><p>Rectangle: <span class="math notranslate nohighlight">\(n = 1, 2\)</span></p></li>
+<li><p>Square: <span class="math notranslate nohighlight">\(n = 1, 2, 4\)</span></p></li>
+<li><p>Hexagonal/Honeycomb: <span class="math notranslate nohighlight">\(n = 1, 2, 3, 6\)</span></p></li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">ME[&quot;type&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;rot&quot;</span></code>: The matrix elements are given by a random polynomial. If this mode is selected, then the field <code class="docutils literal notranslate"><span class="pre">ME[&quot;polyN&quot;]</span></code> gives the order of the polynomial. If <code class="docutils literal notranslate"><span class="pre">ME[&quot;polyN&quot;]</span></code> is not specified, then the order is randomly selected.</p>
+</section>
+<section id="self-energy">
+<h2>Self-energy<a class="headerlink" href="#self-energy" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Fermi-liquid self-energy</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Real part: <span class="math notranslate nohighlight">\(\Sigma' = 0\)</span></p></li>
+<li><p>Imaginary part: <span class="math notranslate nohighlight">\(\Sigma'' = D \, \omega^2 + \Sigma_0\)</span></p></li>
+<li><p>Dictionary keys:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">SE[&quot;val&quot;]</span></code> = <span class="math notranslate nohighlight">\(D\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SE[&quot;ImS0&quot;]</span></code> = <span class="math notranslate nohighlight">\(\Sigma_0\)</span></p></li>
+</ul>
+</li>
+<li><p>Default values (if not provided):</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(\Sigma_0 = 0.01\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(D \in [0.05, 0.25]\)</span>.</p></li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<p>2. Electron-boson kink self-energy
+The self-energy is phenomenological:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\Sigma'(\omega) &amp;= R \left[ \frac{\gamma}{(\omega + \omega_0)^2 + \gamma^2}
+    - \frac{\gamma}{(\omega - \omega_0)^2 + \gamma^2} \right] \\
+\Sigma''(\omega) &amp;= \Sigma_1 - \frac{\Sigma_1 - \Sigma_0}{1 + e^{-(\omega + \omega_0)\gamma}}\end{split}\]</div>
+<ul class="simple">
+<li><p>Dictionary keys and initialized random values (if not provided):</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">SE[&quot;Amp&quot;]</span></code> = <span class="math notranslate nohighlight">\(R \in [0, 0.01]\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SE[&quot;Ekink&quot;]</span></code> = <span class="math notranslate nohighlight">\(\omega_0 \in [0.05, 0.3]\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SE[&quot;gamma&quot;]</span></code> = <span class="math notranslate nohighlight">\(\gamma \in [0, 50]\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SE[&quot;ImS0&quot;]</span></code> = <span class="math notranslate nohighlight">\(\Sigma_0 \in [0.015, 0.025]\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SE[&quot;ImS1&quot;]</span></code> = <span class="math notranslate nohighlight">\(\Sigma_1 \in [0.115, 0.125]\)</span></p></li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="photoemission-intensity">
+<h2>Photoemission intensity<a class="headerlink" href="#photoemission-intensity" title="Link to this heading"></a></h2>
+<p>The spectral function and matrix elements are calculated at once using <code class="docutils literal notranslate"><span class="pre">S.Make_specfun(m)</span></code>. Depending on the dimension of the calculation:</p>
+<div class="math notranslate nohighlight">
+\[\text{cube:}\quad
+I(k_x, k_y, \omega) = \sum_m M_m(\omega)\frac{\Sigma_m''(\omega)}{(\omega-\epsilon_\mathbf{k}-\Sigma'_m(\omega))^2+\Sigma''_m(\omega)^2}\]</div>
+<div class="math notranslate nohighlight">
+\[\text{sliceEk:}\quad
+I(k_x, k_{y_0}, \omega) = \sum_m M_m(\omega)\frac{\Sigma_m''(\omega)}{(\omega-\epsilon_\mathbf{k}-\Sigma'_m(\omega))^2+\Sigma''_m(\omega)^2}\]</div>
+<div class="math notranslate nohighlight">
+\[\text{slicekk:}\quad
+I(k_x, k_y) = \sum_m \int_{\Delta\omega} M_m(\omega)\frac{\Sigma_m''(\omega)}{(\omega-\epsilon_\mathbf{k}-\Sigma'_m(\omega))^2+\Sigma''_m(\omega)^2} d\omega\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Delta\omega = k_B T + \Delta E\)</span></p>
+<p>Then, <code class="docutils literal notranslate"><span class="pre">S.Make_specmod(m)</span></code> adds the Fermi-Dirac distribution and resolution broadening.</p>
+<p>The Fermi-Dirac is added by multiplication:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}I_\text{FD}(\mathbf{k}, \omega) &amp;= f_\text{FD}(\omega, T) I(k_x, k_y, \omega), \\
+f_\text{FD}(\omega, T) &amp;= \frac{1}{1 + e^{\omega - E_F / k_B T}}\end{split}\]</div>
+<p>The resolution effects are added by convolving <span class="math notranslate nohighlight">\(I_\text{FD}(k_x, k_y, \omega)\)</span> in energy and momenta with Gaussian functions whose full-width-half-max are defined by <span class="math notranslate nohighlight">\(\Delta E\)</span> and <span class="math notranslate nohighlight">\(\Delta k\)</span>, respectively:</p>
+<div class="math notranslate nohighlight">
+\[I_\text{res}(\mathbf{k}, \omega) = G(\Delta k, k_x, k_y) \ast
+\big(G(\Delta E, \omega) \ast I_\text{FD}(\mathbf{k}, \omega)\big)\]</div>
+</section>
+<section id="the-probe-photon-energy">
+<h2>The probe photon energy<a class="headerlink" href="#the-probe-photon-energy" title="Link to this heading"></a></h2>
+<p>For real values of <code class="docutils literal notranslate"><span class="pre">theta</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha</span></code> (i.e., for the photoelectron to be emitted), the condition</p>
+<div class="math notranslate nohighlight">
+\[E_k = h \nu - \Phi - E_b \geq \frac{\hbar^2 (k_x^2 + k_y^2)}{2 m_e}\]</div>
+<p>must be satisfied for the deepest binding energies and largest momenta. This gives:</p>
+<div class="math notranslate nohighlight">
+\[h \nu \geq \frac{\hbar^2 k_\text{lim}^2}{m_e} + \min(\omega) + \Phi\]</div>
+<p>To ideally collect angles within ~45°, we add a factor of 2 to the RHS and a random number <code class="docutils literal notranslate"><span class="pre">r</span></code> in [0,5] eV:</p>
+<div class="math notranslate nohighlight">
+\[h \nu = \frac{2 \hbar^2 k_\text{lim}^2}{m_e} + \min(\omega) + \Phi + r\]</div>
+</section>
+<section id="the-momentum-to-angle-conversion">
+<h2>The momentum-to-angle conversion<a class="headerlink" href="#the-momentum-to-angle-conversion" title="Link to this heading"></a></h2>
+<p>We define the sample’s out-of-plane direction as <span class="math notranslate nohighlight">\(\hat{z}\)</span>.
+The axis parallel (perpendicular) to the slit of the hemispherical analyzer is denoted <span class="math notranslate nohighlight">\(\hat{y}\)</span> (<span class="math notranslate nohighlight">\(\hat{x}\)</span>).</p>
+<ul class="simple">
+<li><p>The polar angle <span class="math notranslate nohighlight">\(\theta\)</span> is a rotation about the <span class="math notranslate nohighlight">\(\hat{y}\)</span> axis.</p></li>
+<li><p>The tilt angle <span class="math notranslate nohighlight">\(\phi\)</span> is a rotation about the <span class="math notranslate nohighlight">\(\hat{x}\)</span> axis.</p></li>
+<li><p>The azimuth angle <span class="math notranslate nohighlight">\(\alpha\)</span> is a rotation about the <span class="math notranslate nohighlight">\(\hat{z}\)</span> axis.</p></li>
+</ul>
+<p>The angles <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\alpha\)</span> are calculated from conservation of momentum:</p>
+<div class="math notranslate nohighlight">
+\[\theta = \text{sign}(k_x)\arcsin\left(\frac{\hbar\sqrt{k_x^2+k_y^2}}{\sqrt{2m_eE_k}}\right),
+\quad\quad
+\alpha = \arcsin\left(\frac{\hbar k_y}{\sqrt{2m_eE_k}\sin\theta}\right)\]</div>
+<p>The vector defining the direction of photoelectron propagation is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation}
+\begin{split}
+    d'&amp;=R(\alpha, \hat{z})R(\theta, \hat{y})d\\
+    &amp;=\begin{pmatrix}
+            \cos\alpha\cos\theta &amp; -\sin\alpha &amp; \cos\alpha\sin\theta \\
+            \sin\alpha\cos\theta &amp; \cos\alpha &amp;  \sin\alpha\sin\theta\\
+            -\sin\theta &amp; 0 &amp; \cos\theta\\
+    \end{pmatrix}
+    \begin{pmatrix}
+            0 \\
+            0 \\
+            1 \\
+    \end{pmatrix}
+    =\begin{pmatrix}
+            \cos\alpha\sin\theta \\
+            \sin\alpha\sin\theta \\
+            \cos\theta \\
+    \end{pmatrix}\\
+\end{split}
+\end{equation}\end{split}\]</div>
+<p>To get the emission angles with respect to the analyzer, we find the angles <span class="math notranslate nohighlight">\(\theta_m\)</span> and <span class="math notranslate nohighlight">\(\phi_m\)</span> needed to map <span class="math notranslate nohighlight">\(d'\)</span> onto <span class="math notranslate nohighlight">\(d\)</span>.
+We rotate first along the analyzer slit (<span class="math notranslate nohighlight">\(\theta_m\)</span>), then perpendicular to it (<span class="math notranslate nohighlight">\(\phi_m\)</span>):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation}
+\begin{split}
+    d&amp;=R(\phi_m, \hat{x})R(\theta_m, \hat{y})d'\\
+    \begin{pmatrix}
+            0 \\
+            0 \\
+            1 \\
+    \end{pmatrix}
+    &amp;=\begin{pmatrix}
+            \cos\theta_m &amp; 0 &amp; \sin\theta_m\\
+            \sin\phi_m\sin\theta_m &amp; \cos\phi_m &amp; -\sin\phi_m\cos\theta_m \\
+            -\cos\phi_m\sin\theta_m &amp; \sin\phi_m &amp;  \cos\phi_m\cos\theta_m \\
+    \end{pmatrix}
+    \begin{pmatrix}
+            d'_x \\
+            d'_y \\
+            d'_z \\
+    \end{pmatrix}\\
+\end{split}
+\end{equation}\end{split}\]</div>
+<p>Adding offset angles is straightforward:
+we apply the rotation matrices <span class="math notranslate nohighlight">\(R(\theta_0,\hat{y})\)</span> and <span class="math notranslate nohighlight">\(R(\phi_0,\hat{x})\)</span> to <span class="math notranslate nohighlight">\(d\)</span> before calculating the photoemission angles:</p>
+<div class="math notranslate nohighlight">
+\[d' = R(\alpha, \hat{z})R(\theta, \hat{y})R(\phi_0,\hat{x})R(\theta_0,\hat{y})d\]</div>
+<p>This leads to the system of equations:</p>
+<div class="math notranslate nohighlight">
+\[\theta_m = -\arctan\left(\frac{d'_x}{d'_z}\right), \qquad
+\phi_m = \arcsin(d'_y)\]</div>
+<p>Alternatively, if we rotate perpendicular to the slit first, then along the slit, we reverse the order of the matrices:</p>
+<div class="math notranslate nohighlight">
+\[d = R(\theta_m, \hat{y})R(\phi_m, \hat{x})d'\]</div>
+<p>In this case:</p>
+<div class="math notranslate nohighlight">
+\[\theta_m = -\arcsin(d'_x), \qquad
+\phi_m = \arctan\left(\frac{d'_y}{d'_z}\right)\]</div>
+<p>Having obtained this conversion for all <span class="math notranslate nohighlight">\(k_x\)</span> and <span class="math notranslate nohighlight">\(k_y\)</span>,
+we define a square mesh of angles <span class="math notranslate nohighlight">\(\theta_M\)</span> and <span class="math notranslate nohighlight">\(\phi_M\)</span> and interpolate onto it using
+<span class="math notranslate nohighlight">\((\theta_m, \phi_m, I_\text{res}(\mathbf{k},\omega))\)</span>.</p>
+<p>The resulting values <span class="math notranslate nohighlight">\(I(\theta, \phi, E_k)\)</span> are stored in <code class="docutils literal notranslate"><span class="pre">arpes.intensity</span></code>.</p>
+<p>When simulating a sample with flake-like domains at different offset angles, the conversion is done for each domain.
+In this case, the function returns the intensity <span class="math notranslate nohighlight">\(I(\theta, \phi, E_k, \theta_0, \phi_0)\)</span> directly, so intensity from all flakes can be combined externally.</p>
+</section>
+<section id="the-angle-to-momentum-check">
+<h2>The angle-to-momentum check<a class="headerlink" href="#the-angle-to-momentum-check" title="Link to this heading"></a></h2>
+<p>To convert from angle to momentum, we simply define a transformation matrix <span class="math notranslate nohighlight">\(T\)</span> consisting of all the rotational matrices:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation}
+    \begin{split}
+        T&amp;=R_\text{motors}(\theta_m, \phi_m)R_\text{offset}(\theta_0, \phi_0, \alpha_0)\\
+        &amp;=R(\theta_m, \hat{y})R(\phi_m, \hat{x})R(\theta_0,\hat{y})R(\phi_0,\hat{x})R(\alpha_0,\hat{z})
+    \end{split}
+\end{equation}\end{split}\]</div>
+<p>Then the normalized vector for photoelectron <span class="math notranslate nohighlight">\(k_\text{norm}\)</span> is given by solving <span class="math notranslate nohighlight">\(Tk_\text{norm}=d\)</span></p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}
+    k= |k|T/d,
+\end{equation}\]</div>
+<p>where <span class="math notranslate nohighlight">\(d=(0,0,1)\)</span>, and <span class="math notranslate nohighlight">\(|k|=\sqrt{2m_e E_k}\hbar\)</span>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="save.html" class="btn btn-neutral float-left" title="hdf5 saving module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="ARPES API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MengXing Na, Matteo Michiardi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

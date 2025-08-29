@@ -1,0 +1,33 @@
+.. toctree::
+   :maxdepth: 2
+
+ARPES module
+************
+.. automodule:: aurelia_arpes
+
+Define Bands
+============
+The object *Bands* defines the electronic dispersion. The in-plane k-path -- specified by a list of :math:`k_x` and :math:`k_y` points -- and the band dispersion is calculated along the path according to a specified tight-binding model. Alternatively, one can also import the band dispersion from an external file.
+One actually does not need any input to initialize the object *Bands*, the reason is because we want to randomly generate dispersions and use them to train deep-learning algorithms. Here, variety matters more than accuracy. Thus one can simply write:
+::
+    B = Bands()
+However, user may alternatively specify the symmetry, momentum space limits, number of bands, and number of points in the calculation here. An example is shown below:
+::
+    B = Bands(Npts = [200, 100], symmetry = 'square', klim = np.array([[-1.2,-1], [1.2, 1]],
+    Nbands = np.random.randint(1,5)), warp = 'yes', edges=1.25)
+Following this, one can create the k-path and the tight-binding calculation:
+::
+    B.Make_kpath()
+    B.Make_bands()
+Alternatively, one can import the band dispersion itself from an external file:
+::
+  B = Bands()
+  B.Import_bands(filename = 'Graphene_bands.csv')      
+In which case the default inputs will be fetched from the file itself and overwritten with the correct values from the file. 
+
+Bands Class
+------------
+.. autoclass:: aurelia_arpes.Bands
+  :members:
+
+

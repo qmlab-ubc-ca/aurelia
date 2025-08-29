@@ -1,0 +1,528 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARPES API &mdash; aurelia 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Derivations" href="derivations.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/aurelia_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">Static parameters module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plots.html">Plotting module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">hdf5 saving module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="derivations.html">Derivations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ARPES API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bands-class">Bands Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aurelia_arpes.Bands"><code class="docutils literal notranslate"><span class="pre">Bands</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.Bands.Import_bands"><code class="docutils literal notranslate"><span class="pre">Bands.Import_bands()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.Bands.Make_bands"><code class="docutils literal notranslate"><span class="pre">Bands.Make_bands()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.Bands.Make_kpath"><code class="docutils literal notranslate"><span class="pre">Bands.Make_kpath()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.Bands.print_variables"><code class="docutils literal notranslate"><span class="pre">Bands.print_variables()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#spec-class">Spec Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aurelia_arpes.Spec"><code class="docutils literal notranslate"><span class="pre">Spec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.Spec.Make_matrix_elements"><code class="docutils literal notranslate"><span class="pre">Spec.Make_matrix_elements()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.Spec.Make_self_energy"><code class="docutils literal notranslate"><span class="pre">Spec.Make_self_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.Spec.Make_specfun"><code class="docutils literal notranslate"><span class="pre">Spec.Make_specfun()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.Spec.Make_specmod"><code class="docutils literal notranslate"><span class="pre">Spec.Make_specmod()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.Spec.print_variables"><code class="docutils literal notranslate"><span class="pre">Spec.print_variables()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#arpes-class">ARPES Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aurelia_arpes.ARPES"><code class="docutils literal notranslate"><span class="pre">ARPES</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.ARPES.Crop_edges"><code class="docutils literal notranslate"><span class="pre">ARPES.Crop_edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.ARPES.Make_angle_conv"><code class="docutils literal notranslate"><span class="pre">ARPES.Make_angle_conv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.ARPES.Make_kwarp_check"><code class="docutils literal notranslate"><span class="pre">ARPES.Make_kwarp_check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.ARPES.Make_quality_score"><code class="docutils literal notranslate"><span class="pre">ARPES.Make_quality_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.ARPES.Make_statistics"><code class="docutils literal notranslate"><span class="pre">ARPES.Make_statistics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_arpes.ARPES.print_variables"><code class="docutils literal notranslate"><span class="pre">ARPES.print_variables()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">aurelia</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ARPES API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="arpes-api">
+<h1>ARPES API<a class="headerlink" href="#arpes-api" title="Link to this heading"></a></h1>
+<section id="bands-class">
+<h2>Bands Class<a class="headerlink" href="#bands-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aurelia_arpes.Bands">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aurelia_arpes.</span></span><span class="sig-name descname"><span class="pre">Bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symmetry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">klim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nbands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Npts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Bands" title="Link to this definition"></a></dt>
+<dd><p>Calculates the bandstructure based on a tight-binding model. The input arguments are saved in the <code class="docutils literal notranslate"><span class="pre">Bands</span></code> object.</p>
+<p><em>Optional args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">symmetry</span></code>: A string. Defines the lattice of the tight-binding model. The available inputs are ‘rectangle’, ‘square’, ‘hexagonal’, ‘honeycomb’. If an input is not given, one is chosen at random.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">klim</span></code>: A <span class="math notranslate nohighlight">\(2 \times 2\)</span> numpy array defining the limits of <span class="math notranslate nohighlight">\(k_x\)</span> and <span class="math notranslate nohighlight">\(k_y\)</span> in the list. If an input is not given, the lower limit is chosen randomly between <span class="math notranslate nohighlight">\([-1,-0.5]\)</span>, and the upper limit is chosen randomly between <span class="math notranslate nohighlight">\([0.5, 1]\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Nbands</span></code>: An integer defining the number of bands in the tight-binding model. If an input is not given, one is chosen at random between <span class="math notranslate nohighlight">\([1, 5]\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">warp</span></code>: A string. “on” or “off”. Toggles next-nearest neighbour hopping in the tight-binding model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Npts</span></code>: A <span class="math notranslate nohighlight">\(2 \times 1\)</span> numpy array (elements are integers) defining the number of points calculated in the <span class="math notranslate nohighlight">\(k_x\)</span> and <span class="math notranslate nohighlight">\(k_y\)</span> dimensions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edges</span></code>: A float slightly larger than one. Since we calculate a limited region of k-space, interpolation may be off at the edges if we use large offset angles in the experiment. Here, the k-space edge is padded and later cropped to exclude artifacts.</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.Bands.Import_bands">
+<span class="sig-name descname"><span class="pre">Import_bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Bands.Import_bands" title="Link to this definition"></a></dt>
+<dd><p>This function imports bands from a file. The file should have kx in column 1, ky in column 2. Each band should be in its own column from 3 onwards.</p>
+<p><em>args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code>: A string. The name of the file to be imported.</p></li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p>The following and read from the file and saved to the Bands object: <code class="docutils literal notranslate"><span class="pre">Npts</span></code>, <code class="docutils literal notranslate"><span class="pre">kax</span></code>, <code class="docutils literal notranslate"><span class="pre">kay</span></code>, <code class="docutils literal notranslate"><span class="pre">klim</span></code>, <code class="docutils literal notranslate"><span class="pre">kpath</span></code>, <code class="docutils literal notranslate"><span class="pre">bands</span></code>, <code class="docutils literal notranslate"><span class="pre">Nbands</span></code></p></li>
+<li><p>The following parameters are defined statically:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bands</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">bands</span><span class="o">.</span><span class="n">warp</span> <span class="o">=</span> <span class="s2">&quot;off&quot;</span>
+<span class="n">bands</span><span class="o">.</span><span class="n">symmetry</span> <span class="o">=</span> <span class="s2">&quot;custom&quot;</span> 
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.Bands.Make_bands">
+<span class="sig-name descname"><span class="pre">Make_bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Bands.Make_bands" title="Link to this definition"></a></dt>
+<dd><p>This function calculates the dispersion using a tight-binding model.</p>
+<p><em>Optional args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tb</span></code>: A Python dictionary representing the tight-binding parameters. The dictionary is of the form:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tb</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;E0&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(E_0\)</span> and <span class="math notranslate nohighlight">\(t\)</span> must be NumPy arrays of dimension <span class="math notranslate nohighlight">\([1 , N_\text{bands}]\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(E_0\)</span> contains the center energies of the bands.</p></li>
+<li><p><span class="math notranslate nohighlight">\(t\)</span> contains the hopping parameter of each band.</p></li>
+</ul>
+<p>If the lattice is rectangular (as defined in <code class="docutils literal notranslate"><span class="pre">Bands.symmetry</span></code>), then
+<span class="math notranslate nohighlight">\(t\)</span> must have shape <span class="math notranslate nohighlight">\([2, N_\text{bands}]\)</span>.</p>
+<p>If no input is provided, <span class="math notranslate nohighlight">\(E_0\)</span> is randomly generated in the interval [-1, 0],
+and <span class="math notranslate nohighlight">\(t\)</span> is randomly generated in the interval [-1, 1].</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lattice</span></code>: A Python dictionary of the lattice parameters.</p></li>
+</ul>
+<p>These lattice parameters define the size of the Brillouin zone and – by extension – the field of view given by the limits set in <code class="docutils literal notranslate"><span class="pre">Bands.klim</span></code>. 
+The dictionary is of the form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lattice</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>  are floats.</p></li>
+</ul>
+<p>If no input is provided, <span class="math notranslate nohighlight">\(a\)</span> and math:<cite>b</cite> are calculated from the k-space limits.</p>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Bands.bands</span></code>: A <span class="math notranslate nohighlight">\([N , N_{\text{bands}}\)</span> numpy array defining the dispersion of each band along the k-path. N is given by the product of <code class="docutils literal notranslate"><span class="pre">Bands.Npts</span></code>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.Bands.Make_kpath">
+<span class="sig-name descname"><span class="pre">Make_kpath</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Bands.Make_kpath" title="Link to this definition"></a></dt>
+<dd><p>This function defines the <span class="math notranslate nohighlight">\(k_x\)</span> and <span class="math notranslate nohighlight">\(k_y\)</span> grid the bands are calculated on. 
+The edges are padded so that rotation and interpolation do not create artifacts. 
+The calculation of the dispersion is not particularly time-intensive, so a grid of points is typically calculated. 
+To speed up computation, the ARPES spectra can be calculated over just <span class="math notranslate nohighlight">\(k_x\)</span>, but the grid of points are needed for interpolation in the case of rotational or offset domains.</p>
+<p>This function adds the following to the <code class="docutils literal notranslate"><span class="pre">Bands</span></code> object:</p>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Bands.kpath</span></code>: A <span class="math notranslate nohighlight">\(N \times 2\)</span> numpy array defining the k-path along which the dispersion is calculated. <span class="math notranslate nohighlight">\(N\)</span> is the product of the elements of <code class="docutils literal notranslate"><span class="pre">Bands.Npts</span></code>. The first and second columns correspond to <span class="math notranslate nohighlight">\(k_x\)</span> and <span class="math notranslate nohighlight">\(k_y\)</span>, respectively.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Bands.kax</span></code>: A <span class="math notranslate nohighlight">\(N_\text{pts}^x \times 1\)</span> numpy array defining the <span class="math notranslate nohighlight">\(k_x\)</span> axis. Used for plotting purposes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Bands.kay</span></code>: A <span class="math notranslate nohighlight">\(N_\text{pts}^y \times 1\)</span> numpy array defining the <span class="math notranslate nohighlight">\(k_y\)</span> axis. Used for plotting purposes.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.Bands.print_variables">
+<span class="sig-name descname"><span class="pre">print_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Bands.print_variables" title="Link to this definition"></a></dt>
+<dd><p>Provides a summary of variables used to define the band structure.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="spec-class">
+<h2>Spec Class<a class="headerlink" href="#spec-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aurelia_arpes.Spec">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aurelia_arpes.</span></span><span class="sig-name descname"><span class="pre">Spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Omega</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Spec" title="Link to this definition"></a></dt>
+<dd><p>Calculates the photoemission spectra. Includes the Fermi-Dirac distribution, matrix elements and resolution broadening.</p>
+<p><em>args:</em></p>
+<ul class="simple">
+<li><p>The input <code class="docutils literal notranslate"><span class="pre">bands</span></code> is an object. Defines the electronic dispersion and k-path.</p></li>
+</ul>
+<p><em>Optional args:</em></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">dimension</span></code>: A string. Defines the dimension of the calculation, three modes are available.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The input “cube” calculates the spectra in binding energy <span class="math notranslate nohighlight">\(\omega\)</span>, and the crystal momenta <span class="math notranslate nohighlight">\(k_x\)</span>, and <span class="math notranslate nohighlight">\(k_y\)</span>.</p></li>
+<li><p>The input “sliceEk” calculates the spectra in <span class="math notranslate nohighlight">\(\omega\)</span> and <span class="math notranslate nohighlight">\(k_x\)</span>. The “dispersion cut”.</p></li>
+<li><p>The input “slicekk” calculates the spectra in <span class="math notranslate nohighlight">\(k_x\)</span> and <span class="math notranslate nohighlight">\(k_y\)</span>. The “Fermi surface” or “constant energy cut”.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Omega</span></code>: A <span class="math notranslate nohighlight">\(M \times 1\)</span> numpy array defining the binding energy range points over which the photoemission spectra are calculated.</p></li>
+</ul>
+<p><em>Saved args:</em></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.bands</span></code> : The object defining the electronic dispersion and k-path.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.kax</span></code> : numpy array of shape <span class="math notranslate nohighlight">\((N_\text{pts}^x, 1)\)</span>. Defines the <span class="math notranslate nohighlight">\(k_x\)</span> axis. Used for plotting purposes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.kay</span></code> : numpy array of shape <span class="math notranslate nohighlight">\((N_\text{pts}^y, 1)\)</span>. Defines the <span class="math notranslate nohighlight">\(k_y\)</span> axis. Used for plotting purposes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.matrix_elements</span></code> : numpy array of shape <span class="math notranslate nohighlight">\((N, N_\text{bands})\)</span>. Matrix elements of each band along the k-path. Same shape as <code class="docutils literal notranslate"><span class="pre">Bands.bands</span></code>. Initialized as an array of ones.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.ReS</span></code> : numpy array of shape <span class="math notranslate nohighlight">\((M, N_\text{bands})\)</span>. The real part of the self-energy, initialized as zeros.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.ImS</span></code> : numpy array of shape <span class="math notranslate nohighlight">\((M, N_\text{bands})\)</span>. The real part of the self-energy, initialized as with a single value of 0.2.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.domain</span></code> : numpy array. Defines the relative intensity of rotational and offset domains. Initialized (for the primary domain) as an array of ones with shape <span class="math notranslate nohighlight">\((1, N_{\text{bands}})\)</span>.</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.Spec.Make_matrix_elements">
+<span class="sig-name descname"><span class="pre">Make_matrix_elements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ME</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Spec.Make_matrix_elements" title="Link to this definition"></a></dt>
+<dd><p>This function creates fake matrix elements aimed at varying the intensity of bands to mimic photoemission intensity.</p>
+<p><em>args:</em></p>
+<ul>
+<li><p>A Python dictionary. Defines the type of fake photoemission matrix elements that are generated. Accepts three strings.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;symm&quot;</span></code>: Gives matrix elements the same symmetry as that of the tight-binding model, in that they are periodic in k-space in the same way.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;rot&quot;</span></code> : Gives matrix elements with rotational symmetry, which mimics the orbital selectivity of linear and/or circularly polarized light.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;poly&quot;</span></code>: Gives matrix elements defined by a random polynomial. Used to modulate the intensity of the bands and is used to mimic the unpredictable effects of experimental geometry variance in the light.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><em>Saved args:</em></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.matrix_elements</span></code>: A NumPy array defining the matrix elwith the same dimensions as <code class="docutils literal notranslate"><span class="pre">Bands.bands</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.ME</span></code>: The Python dictionary specifying parameters of the matrix-element calculation.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.Spec.Make_self_energy">
+<span class="sig-name descname"><span class="pre">Make_self_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Spec.Make_self_energy" title="Link to this definition"></a></dt>
+<dd><p>This function is optional, since the self-energy is already initialized. 
+For more realistic ARPES spectra, two types of self-energy are available through the input dictionary <code class="docutils literal notranslate"><span class="pre">SE</span></code>:</p>
+<p><em>args</em>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">SE</span></code>: a python dictionary. The key <code class="docutils literal notranslate"><span class="pre">type</span></code> accepts two strings: <code class="docutils literal notranslate"><span class="pre">&quot;FL&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;kink&quot;</span></code>, corresponding to Fermi-liquid or electron-boson kink.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>for Fermi-liquid type self energy, additional fields <code class="docutils literal notranslate"><span class="pre">val</span></code> and <code class="docutils literal notranslate"><span class="pre">ImS0</span></code> may be specified (or will be randomly chosen)</p></li>
+<li><p>for electron-boson kink, additional fields <code class="docutils literal notranslate"><span class="pre">ImS0</span></code>, <code class="docutils literal notranslate"><span class="pre">ImS1</span></code>, <code class="docutils literal notranslate"><span class="pre">Amp</span></code>, <code class="docutils literal notranslate"><span class="pre">Ekink</span></code>, and <code class="docutils literal notranslate"><span class="pre">gamma</span></code> may be specified (or will be randomly chosen).</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><em>Saved args:</em></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.ReS</span></code> : numpy array of shape <span class="math notranslate nohighlight">\((M, N_\text{bands})\)</span>. The real part of the self-energy.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.ImS</span></code> : numpy array of shape <span class="math notranslate nohighlight">\((M, N_\text{bands})\)</span>. The real part of the self-energy.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.SE</span></code> : the python dictionary with parameters used in the calculation of the self-energy.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.Spec.Make_specfun">
+<span class="sig-name descname"><span class="pre">Make_specfun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Spec.Make_specfun" title="Link to this definition"></a></dt>
+<dd><p>This function calculates the photoemission spectral intensity based on the band structure as well as the self-energy given.</p>
+<p><em>args</em>:
+- <code class="docutils literal notranslate"><span class="pre">mod</span></code>: a Python dictionary of the form <code class="docutils literal notranslate"><span class="pre">mod</span> <span class="pre">=</span> <span class="pre">{&quot;ER&quot;:</span> <span class="pre">[],</span> <span class="pre">&quot;kR&quot;:</span> <span class="pre">[],</span> <span class="pre">&quot;Temp&quot;:</span> <span class="pre">[]}</span></code>, 
+where the three fields define the energy resolution, the angular resolution, 
+and the electronic temperature, respectively. 
+<code class="docutils literal notranslate"><span class="pre">mod</span></code> is an object generated by the <code class="docutils literal notranslate"><span class="pre">aurelia_static_vars</span></code> module.</p>
+<p>The outputs of the function are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.mod</span></code>: The Python dictionary which collects the modification parameters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.specfun</span></code>: A numpy array with a dimension specified by <code class="docutils literal notranslate"><span class="pre">spec.dimension</span></code>, such that:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cube</span></code>: <span class="math notranslate nohighlight">\(M \times N_{pts}^x \times N_{pts}^y\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sliceEk</span></code>: <span class="math notranslate nohighlight">\(M \times N_{pts}^x\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slicekk</span></code>: <span class="math notranslate nohighlight">\(1 \times N_{pts}^x \times N_{pts}^y\)</span></p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.Spec.Make_specmod">
+<span class="sig-name descname"><span class="pre">Make_specmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Spec.Make_specmod" title="Link to this definition"></a></dt>
+<dd><p>This function modifies the intensity in <code class="docutils literal notranslate"><span class="pre">self.specfun</span></code> by adding the Fermi-Dirac distribution and resolution broadening.</p>
+<p><em>args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mod</span></code>: an object generated the <em>aurelia_static_vars</em> module. Defines the energy resolution, the angular resolution, and the electronic temperature.</p></li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.specfun</span></code>: The modified intensity replaces that previous calculated via spec.Make_specfun(mod)</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.Spec.print_variables">
+<span class="sig-name descname"><span class="pre">print_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.Spec.print_variables" title="Link to this definition"></a></dt>
+<dd><p>Provides a summary of variables used to calculate the measured spectral intensity.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="arpes-class">
+<h2>ARPES Class<a class="headerlink" href="#arpes-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aurelia_arpes.ARPES">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aurelia_arpes.</span></span><span class="sig-name descname"><span class="pre">ARPES</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ang_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.ARPES" title="Link to this definition"></a></dt>
+<dd><p>This function initializes the ARPES simulation.</p>
+<p><em>args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spec</span></code>: An object containing the spectral intensity calculated from the dispersion.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp</span></code>: An object containing the experimental parameters, initialized from the aurelia_static_vars module.</p></li>
+</ul>
+<p><em>Optional args</em>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">dimension</span></code>: A string defining the dimension of the calculation. Three modes are available:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;cube&quot;</span></code>: Spectra in binding energy, <span class="math notranslate nohighlight">\(k_x\)</span>, and <span class="math notranslate nohighlight">\(k_y\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sliceEk&quot;</span></code>: Spectra in binding energy and <span class="math notranslate nohighlight">\(k_x\)</span> (dispersion cut).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;slicekk&quot;</span></code>: Spectra in <span class="math notranslate nohighlight">\(k_x\)</span> and <span class="math notranslate nohighlight">\(k_y\)</span> (Fermi surface).</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>The default <code class="docutils literal notranslate"><span class="pre">dimension</span></code> string is the same as <code class="docutils literal notranslate"><span class="pre">Spec.dimension</span></code>. If <code class="docutils literal notranslate"><span class="pre">Spec.dimension</span> <span class="pre">=</span> <span class="pre">&quot;cube&quot;</span></code>, then <code class="docutils literal notranslate"><span class="pre">arpes.dimension</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">&quot;sliceEk&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;slicekk&quot;</span></code>.  
+This allows offset and rotational domains to be accurately calculated, while saving computational time and file size.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ang_lim</span></code>: A python dictionary with the fields <code class="docutils literal notranslate"><span class="pre">ang_lim[&quot;th&quot;]</span></code> and <code class="docutils literal notranslate"><span class="pre">ang_lim[&quot;ph&quot;]</span></code>. The values are 2-element numpy arrays defining the limits of <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span> seen by the detector. If not specified, the angle limits are calculated using the k-space limits in <code class="docutils literal notranslate"><span class="pre">Spec</span></code>.</p></li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.spec</span></code>: An object containing the spectral intensity calculated from the dispersion.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.exp</span></code>: An object containing the experimental parameters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.Ek</span></code>: The kinetic energy axis, calculated as:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.dimension</span></code>: A string defining the dimension of the calculation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.th</span></code>: A NumPy array of shape <span class="math notranslate nohighlight">\(N_{pts}^x \times 1\)</span>. Defines the angles along the <span class="math notranslate nohighlight">\(k_x\)</span> direction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.ph</span></code>: A NumPy array of shape <span class="math notranslate nohighlight">\(N_{pts}^y \times 1\)</span>. Defines the angles along the <span class="math notranslate nohighlight">\(k_y\)</span> direction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.crop</span></code>: A boolean. Checks if the edges have been cropped. Initialized as <em>false</em>. The edges are defined by <code class="docutils literal notranslate"><span class="pre">Bands.edges</span></code>.</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.ARPES.Crop_edges">
+<span class="sig-name descname"><span class="pre">Crop_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.ARPES.Crop_edges" title="Link to this definition"></a></dt>
+<dd><p>This function crops the edges of the simulation to remove artifacts.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.ARPES.Make_angle_conv">
+<span class="sig-name descname"><span class="pre">Make_angle_conv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.ARPES.Make_angle_conv" title="Link to this definition"></a></dt>
+<dd><p>This function converts the intensity stored in <code class="docutils literal notranslate"><span class="pre">spec.specfun</span></code> in momentum and binding energy to <code class="docutils literal notranslate"><span class="pre">arpes.intensity</span></code> in angle and kinetic energy.</p>
+<p><em>args</em>:</p>
+<ul>
+<li><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">const</span></code>: A float. If the dimension of the calculation is not <code class="docutils literal notranslate"><span class="pre">&quot;cube&quot;</span></code>, this</dt><dd><p>gives the value at which the slice is calculated.</p>
+<ul class="simple">
+<li><p>For <code class="docutils literal notranslate"><span class="pre">self.dimension</span> <span class="pre">=</span> <span class="pre">&quot;sliceEk&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">const</span></code> corresponds to the</p></li>
+</ul>
+<p><span class="math notranslate nohighlight">\(\phi\)</span> axis. Defaults to the mean <span class="math notranslate nohighlight">\(\phi\)</span> value.
+- For <code class="docutils literal notranslate"><span class="pre">self.dimension</span> <span class="pre">=</span> <span class="pre">&quot;slicekk&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">const</span></code> corresponds to
+<span class="math notranslate nohighlight">\(E_k\)</span> axis. Defaults to the Fermi energy.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">domain</span></code>: An object containing information about offset angles for</dt><dd><p>calculating offset domains.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.intensity</span></code>: A numpy array with shape specified by <code class="docutils literal notranslate"><span class="pre">arpes.dimension</span></code>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cube</span></code>: <span class="math notranslate nohighlight">\(M\times N_{pts}^x \times N_{pts}^y\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sliceEk</span></code>: <span class="math notranslate nohighlight">\(M\times N_{pts}^x\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slicekk</span></code>: <span class="math notranslate nohighlight">\(1\times N_{pts}^x \times N_{pts}^y\)</span></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.bkgd</span></code>: A numpy array with the same shape as <code class="docutils literal notranslate"><span class="pre">arpes.intensity</span></code>. Initialized as zeros.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.response</span></code>: A numpy array with the same shape as <code class="docutils literal notranslate"><span class="pre">arpes.intensity</span></code>. Initialized as ones.</p></li>
+</ul>
+<p><em>Returned args</em>:</p>
+<ul class="simple">
+<li><p>If this function is used to calculate a domain, then the intensity is not saved, but simply returned.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.ARPES.Make_kwarp_check">
+<span class="sig-name descname"><span class="pre">Make_kwarp_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.ARPES.Make_kwarp_check" title="Link to this definition"></a></dt>
+<dd><p>This function checks the momentum-to-angle conversion by performing an angle-to-momentum conversion before interpolation to show that the original k-mesh is reporduced. 
+It gives no outputs but plots the intensity before warping, after warping to angle, and after warping back to momentum space.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.ARPES.Make_quality_score">
+<span class="sig-name descname"><span class="pre">Make_quality_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.ARPES.Make_quality_score" title="Link to this definition"></a></dt>
+<dd><p>This function provides a quality score for the spectra based on the metrics, feature sharpness, the number of electrons, the signal to background, and a total score.</p>
+<p><em>args</em>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">param</span></code>: A dictionary of the form <code class="docutils literal notranslate"><span class="pre">param</span> <span class="pre">=</span> <span class="pre">{&quot;threshold&quot;:</span> <span class="pre">[],</span> <span class="pre">&quot;penalty&quot;:</span> <span class="pre">[],</span> <span class="pre">&quot;weight&quot;:</span> <span class="pre">[]}</span></code>. The fields are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">param[&quot;threshold&quot;]</span></code>: A numpy array of shape <span class="math notranslate nohighlight">\(m \times 1\)</span> defining the</p></li>
+</ul>
+<p>score brackets where each penalty is incurred. Default: [0.9, 0.7, 0.5, 0.3].
+- <code class="docutils literal notranslate"><span class="pre">param[&quot;penalty&quot;]</span></code>: A numpy array of shape <span class="math notranslate nohighlight">\(m \times 1\)</span> defining the penalty
+amount incurred in each score bracket. Default: [1, 2, 3, 4].
+- <code class="docutils literal notranslate"><span class="pre">param[&quot;weight&quot;]</span></code>: A numpy array of shape <span class="math notranslate nohighlight">\(3 \times 1\)</span> defining the relative
+weights of penalties for each metric. Default: [1, 1, 1].</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.score</span></code>, a dictionary with the following fields:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">score[&quot;width&quot;]</span></code>: Feature sharpness score, out of 1.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">score[&quot;bkgd&quot;]</span></code>: Signal-to-background score, out of 1.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">score[&quot;counts&quot;]</span></code>: Number of electrons score, out of 1.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">score[&quot;final&quot;]</span></code>: Total score, out of 10.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.ARPES.Make_statistics">
+<span class="sig-name descname"><span class="pre">Make_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.ARPES.Make_statistics" title="Link to this definition"></a></dt>
+<dd><p>This function takes the ARPES intensity <span class="math notranslate nohighlight">\(I(\theta,\phi, \omega)\)</span> and uses it as a probability distribution function to generate a measured spectrum of $N$ electrons.</p>
+<p><em>args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">exp</span></code>: An object containing the experimental parameters. Defined via the <code class="docutils literal notranslate"><span class="pre">aurelia_static_vars</span></code> module.</p></li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.stats</span></code>: A numpy array containing the spectra generated by <span class="math notranslate nohighlight">\(N_e\)</span> random electrons that has the same dimension as <code class="docutils literal notranslate"><span class="pre">arpes.intensity</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.dstats</span></code>: A numpy array containing the spectra generated by <span class="math notranslate nohighlight">\(N_e\)</span> random electrons that has the same dimension as <code class="docutils literal notranslate"><span class="pre">arpes.domains</span></code>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_arpes.ARPES.print_variables">
+<span class="sig-name descname"><span class="pre">print_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_arpes.ARPES.print_variables" title="Link to this definition"></a></dt>
+<dd><p>Provides a summary of variables used to calculate the measured arpes spectra.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="derivations.html" class="btn btn-neutral float-left" title="Derivations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MengXing Na, Matteo Michiardi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

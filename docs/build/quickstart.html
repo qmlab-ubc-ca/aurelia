@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Quickstart &#8212; aurelia 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Welcome to aurelia’s Documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">¶</a></h1>
+<p>Welcome to <strong>aurelia</strong> Quick Start!
+This guide demonstrates how to use the Aurelia package to simulate ARPES spectra, including realistic experimental artifacts.</p>
+<section id="step-1-import-aurelia-classes">
+<h2>Step 1: Import aurelia classes<a class="headerlink" href="#step-1-import-aurelia-classes" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Add the aurelia package to the path (if not installed in editable mode)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">aurelia&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia_arpes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bands</span><span class="p">,</span> <span class="n">Spec</span><span class="p">,</span> <span class="n">ARPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia_static_vars</span><span class="w"> </span><span class="kn">import</span> <span class="n">mod</span><span class="p">,</span> <span class="n">experiment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_spectra</span> <span class="k">as</span> <span class="n">sh</span>
+</pre></div>
+</div>
+</section>
+<section id="step-2-define-the-bands">
+<h2>Step 2: Define the bands<a class="headerlink" href="#step-2-define-the-bands" title="Link to this heading">¶</a></h2>
+<p>This defines a tight-binding band structure along a k-path and prints relevant variables for inspection.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Number of points in theta and phi</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">Bands</span><span class="p">(</span><span class="n">Npts</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">250</span><span class="p">])</span>
+<span class="n">B</span><span class="o">.</span><span class="n">Make_kpath</span><span class="p">()</span>
+<span class="n">B</span><span class="o">.</span><span class="n">Make_bands</span><span class="p">()</span>
+<span class="n">B</span><span class="o">.</span><span class="n">print_variables</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-calculate-spectra">
+<h2>Step 3: Calculate spectra<a class="headerlink" href="#step-3-calculate-spectra" title="Link to this heading">¶</a></h2>
+<p>This computes the spectral function for the bands and plots the spectrum.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spec</span> <span class="o">=</span> <span class="n">Spec</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="s1">&#39;sliceEk&#39;</span><span class="p">)</span>
+<span class="n">spec</span><span class="o">.</span><span class="n">Make_matrix_elements</span><span class="p">()</span>
+<span class="n">spec</span><span class="o">.</span><span class="n">Make_self_energy</span><span class="p">(</span><span class="n">SE</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s1">&#39;FL&#39;</span><span class="p">})</span>  <span class="c1"># Fermi-liquid self-energy</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">mod</span><span class="p">()</span>
+<span class="n">spec</span><span class="o">.</span><span class="n">Make_specfun</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">spec</span><span class="o">.</span><span class="n">Make_specmod</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">spec</span><span class="o">.</span><span class="n">print_variables</span><span class="p">()</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">Make_spec_plot</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-4-simulate-arpes-spectra">
+<h2>Step 4: Simulate ARPES spectra<a class="headerlink" href="#step-4-simulate-arpes-spectra" title="Link to this heading">¶</a></h2>
+<p>This defines the experimental artifacts and converts the spectral function to emitted angles and kinetic energies.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define experimental angles</span>
+<span class="n">ang_in</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;th&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">([</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">]),</span>
+          <span class="s2">&quot;ph&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">([</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])}</span>
+
+<span class="c1"># Define detector properties</span>
+<span class="n">det</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+       <span class="s2">&quot;sensitivity&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+       <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s1">&#39;HA&#39;</span><span class="p">,</span>
+       <span class="s2">&quot;slit&quot;</span><span class="p">:</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">,</span>
+       <span class="s2">&quot;counting mode&quot;</span><span class="p">:</span> <span class="s2">&quot;ADC&quot;</span><span class="p">}</span>
+
+<span class="c1"># Define background</span>
+<span class="n">bg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;flat&#39;</span><span class="p">,</span> <span class="s1">&#39;poly&#39;</span><span class="p">)}</span>
+
+<span class="c1"># Create experiment and ARPES objects</span>
+<span class="n">exp</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">detector</span><span class="o">=</span><span class="n">det</span><span class="p">,</span> <span class="n">bkgd</span><span class="o">=</span><span class="n">bg</span><span class="p">,</span> <span class="n">Ne</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">arpes</span> <span class="o">=</span> <span class="n">ARPES</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">ang_lim</span><span class="o">=</span><span class="n">ang_in</span><span class="p">)</span>
+<span class="n">arpes</span><span class="o">.</span><span class="n">Make_angle_conv</span><span class="p">()</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">Make_arpes_plot</span><span class="p">(</span><span class="n">arpes</span><span class="p">,</span> <span class="n">exp</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-5-add-artifacts-and-statistics">
+<h2>Step 5: Add artifacts and statistics<a class="headerlink" href="#step-5-add-artifacts-and-statistics" title="Link to this heading">¶</a></h2>
+<p>This adds realistic experimental effects like detector sensitivity and background noise, and applies statistical sampling to simulate electron counts. The final “measured” ARPES spectrum is shown, and relevant variables are plotted.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">Make_bkgd</span><span class="p">(</span><span class="n">arpes</span><span class="p">)</span>                    <span class="c1"># Add background</span>
+<span class="n">arpes</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">Make_detector_responsivity</span><span class="p">(</span><span class="n">arpes</span><span class="p">)</span>   <span class="c1"># Detector response</span>
+<span class="n">arpes</span><span class="o">.</span><span class="n">Make_statistics</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>                      <span class="c1"># Statistical noise</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">Make_stats_plot</span><span class="p">(</span><span class="n">arpes</span><span class="p">)</span>
+<span class="n">arpes</span><span class="o">.</span><span class="n">print_variables</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">aurelia</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-import-aurelia-classes">Step 1: Import aurelia classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-define-the-bands">Step 2: Define the bands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-calculate-spectra">Step 3: Calculate spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-4-simulate-arpes-spectra">Step 4: Simulate ARPES spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-5-add-artifacts-and-statistics">Step 5: Add artifacts and statistics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to <em>aurelia</em>’s Documentation!</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, MengXing Na, Matteo Michiardi.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/quickstart.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

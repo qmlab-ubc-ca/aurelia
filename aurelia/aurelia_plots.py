@@ -3,9 +3,24 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 
 class show_spectra:
+    """
+    This object contains plotting functions that allows one to check the status of the calculation. There are no outputs to these functions, and they do not change the calculation at all.
+    """
     def __init__(self):
         pass
     def Make_spec_plot(spec, constE=None):
+        """
+        This function plots the values in ``spec.specfun`` as well as the dispersion in ``bands.bands``. 
+        
+        *args*:
+
+        - spec: An object from the ``aurelia_arpes`` module, which can have three dimensions options: 
+        ``"cube"`, ``"slicekk"`, and ``"sliceEk"``. If the dimension is ``"cube"``, one can specify the constant energy cut to plot. 
+        
+        *Optional args*:
+
+        - ``constE``: A float. Specifies the constant energy cut to show (in binding energy). By default, the Fermi surface is chosen.   
+        """
         B=spec.bands
         if spec.dimension=='sliceEk':
             # Display the spectrogram with imagesc
@@ -61,6 +76,17 @@ class show_spectra:
         plt.show()
 
     def Make_arpes_plot(arpes, exp):
+        r"""
+        This function plots the values in ``arpes.intensity``. 
+        The offset angles :math:`\theta_0`, :math:`\phi_0`, and :math:`\alpha_0` defined in the object ``exp`` are also shown by red lines.
+        
+        *args*:
+
+        - ``arpes``: An object from the ``aurelia_arpes`` module, which can have three dimensions options: 
+        ``"cube"`, ``"slicekk"`, and ``"sliceEk"``. If the dimension is ``"cube"``, slices are plotted. By default, the Fermi surface is chosen, along with mean values of :math:`\theta` and :math:`\phi` axes.
+        
+        - ``exp``: An object from the ``aurelia_static_vars`` module.
+        """
         B=arpes.spec.bands
         if arpes.dimension=='sliceEk':
             indEF = np.where(arpes.spec.Omega >= 0)[0][0]
@@ -121,6 +147,26 @@ class show_spectra:
         plt.show()
 
     def Make_flake_plot(arpes, exp, domain):
+        r"""
+        This function plots the values in ``arpes.intensity`` and ``arpes.domains``.
+        The offset angles :math:`\theta_0`, :math:`\phi_0`, and :math:`\alpha_0` defined
+        by both the experiment object ``exp`` and the domain object ``domain`` are
+        shown as red lines to verify correctness.
+
+        If the calculation dimension is ``"cube"``, slices must be chosen for plotting.
+        By default, the Fermi surface is selected along with the mean values of
+        ``arpes.th`` and ``arpes.ph``.
+
+        *args*:
+
+        - ``arpes``: An object from the ``aurelia_arpes`` module, which can have three dimensions options: 
+        ``"cube"`, ``"slicekk"`, and ``"sliceEk"``. If the dimension is ``"cube"``, slices are plotted. By default, the Fermi surface is chosen, along with mean values of :math:`\theta` and :math:`\phi` axes.
+        
+        - ``exp``: An object from the ``aurelia_static_vars`` module.
+        
+        - ``domain``: An object from the ``aurelia_static_vars`` module.
+
+        """
         B=arpes.spec.bands
         if arpes.dimension=='sliceEk':
             fig = plt.figure()
@@ -218,19 +264,32 @@ class show_spectra:
         plt.show()
 
     def Make_stats_plot(arpes):
+        r"""
+        This function plots the values in ``arpes.stats`` and ``arpes.dstats``, if available.
+        If the calculation dimension is ``"cube"``, slices must be chosen for plotting.
+        By default, the Fermi surface is selected along with the mean values of
+        ``arpes.th`` and ``arpes.ph``.
+
+        *args*:
+
+        - ``arpes``: An object from the ``aurelia_arpes`` module, which can have three dimensions options: 
+        ``"cube"`, ``"slicekk"`, and ``"sliceEk"``. If the dimension is ``"cube"``, slices are plotted. By default, the Fermi surface is chosen, along with mean values of :math:`\theta` and :math:`\phi` axes.
+        """
+        if arpes.crop is False:
+            arpes.Crop_edges()
         if arpes.dimension=='sliceEk':
             indEF = np.where(arpes.spec.Omega >= 0)[0][0]
             TH, EK = np.meshgrid(np.degrees(arpes.th), arpes.Ek)
             if hasattr(arpes, 'dstats') == True:
                 fig = plt.figure()
                 gs = gridspec.GridSpec(1, 2)
-                ax = fig.add_subplot(gs[0,0])
-                ax.pcolormesh(TH, EK, arpes.stats, cmap='gray_r')
-                plt.axhline(y=arpes.Ek[indEF], linestyle='--', linewidth=1, color='black')
-
                 dTH, EK = np.meshgrid(np.degrees(arpes.th), arpes.Ek)
                 ax = fig.add_subplot(gs[0,1])
                 ax.pcolormesh(dTH, EK, arpes.dstats, cmap='gray_r')
+
+                ax = fig.add_subplot(gs[0,0])
+                ax.pcolormesh(TH, EK, arpes.stats, cmap='gray_r')
+                plt.axhline(y=arpes.Ek[indEF], linestyle='--', linewidth=1, color='black')                
             elif hasattr(arpes, 'dstats') == False:
                 plt.pcolormesh(TH, EK, arpes.stats, cmap='gray_r')
                 plt.colorbar()

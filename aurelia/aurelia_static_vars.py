@@ -1,8 +1,34 @@
+r"""
+
+This module contains the static experimental parameters informing the ARPES simulation. It provides three main classes: ``modifier``, ``domain``, and ``experiment``.
+
+``modifier``: Defines the electronic temperature of the Fermi-Dirac distribution and the resolution broadenings. It is used with the ``Spec`` object in the ``aurelia_arpes`` module.
+
+``domains``: Defines and adds rotational and offset (flake) domains to the ARPES intensity.
+
+``experiment``: Defines the photoemission experimental parameters and experimental artifacts, such as the photon energy, angular acceptance, number of collected electrons, the type of detector, detector responsivity, and background intensity/noise. 
+
+"""
+
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 
 class mod:
+    r"""
+    This function initializes the modifier object.
+
+    *Optional args*:
+
+    - ``temperature``: A float defining the electronic temperature. If not given, it is a random value between 10 and 350. (Lower values can be given but the number of points in the energy dimension (:math:`\omega`) the calculation must increase for it to be accurate, increasing computational time). 
+    - ``resolution``: A python dictionary of the form ``resolution = {"ER":[],"kR":[] }``, where ``ER`` (``kR``) are floats defining the energy (momentum/angular) resolution of the setup, respectively.
+
+    *Saved args*:
+
+    - ``mod.Temp``: A float, the electronic temperature.
+    - ``mod.ER``: A float, the energy resolution.
+    - ``mod.kR``: A float, the momentum/angular resolution.
+    
+    """
     def __init__(self, temperature=None, resolution=None):
         if temperature == None:
             self.Temp=np.random.uniform(10,350)
@@ -16,6 +42,35 @@ class mod:
             self.kR=resolution["kR"]
 
 class domain:
+    r"""
+    This function initializes the flake and rotational domains that may be present in the ARPES experiment
+
+    *args*:
+
+    - ``az``: A python dictionary specifying the rotational domains. It has the following fields:
+        - ``az["Num"]``: An integer :math:`r` determining the number of rotational domains. If not specified, this number is chosen randomly on the interval [1, 3].
+
+        - ``az["az"]``: A numpy array of dimension :math:`r \times 1`. Contains the azimuth angle of each rotational domain. If not specified, the elements are chosen randomly on the interval [-30, 30].
+
+        - ``az["amp"]``: A numpy array of dimension :math:`r \times 1`.  Contains the relative intensity amplitude of each rotational domain. If not specified, the elements are chosen randomly on the interval [0, 1].
+
+    - ``flake``: A python dictionary specifying the flake domains. It has the following fields:
+
+        - ``flake["Num"]``: An integer :math:`f` determining the number of flake domains. If not specified, this number is chosen randomly on the interval [0, 5].
+
+        - ``flake["th"]``: A numpy array of dimension :math:`f \times 1`. Contains the ``theta`` offset angle of each flake domain. If not specified, the elements are chosen randomly on the interval [-5, 5].
+
+        - ``flake["ph"]``: A numpy array of dimension :math:`f \times 1`. Contains the ``phi`` offset angle of each flake domain. If not specified, the elements are chosen randomly on the interval [-5, 5].
+
+        - ``flake["amp"]``: A numpy array of dimension :math:`f \times 1`. Contains the relative intensity amplitude of each flake domain. If not specified, the elements are chosen randomly on the interval [0, 1].
+
+    *Saved args*:
+    
+    - ``domain.az``
+
+    - ``domain.flake``
+
+    """
     def __init__(self, az=None, flake=None):
         # Make it really static when exposing inputs
         #Rotational domain parameters
@@ -47,6 +102,24 @@ class domain:
                 flake["amp"] = np.random.rand(flake["Num"])
         self.flake=flake
     def Make_domain_rot(self, spec):
+        r"""
+        This function creates rotational domains in the spectra. 
+        Computationally, this is fastest by rotating the k-path, interpolating the bands, addign them to Band.bands, and calculating the new spectral intensity.
+
+        *args*:
+
+        - spec: An object containing the spectral intensity. Generated from the ``aurelia_arpes`` module.
+
+        *Saved args*:
+
+        - ``domain.type``: A string ``"rot"`` indicating a rotational domain is added.
+        - ``spec.domain_info``: The object domain, which contains the parameters specifying the rotational domain.
+
+        *Returned args*:
+        - ``bands``: An object defining the bandstructure. Generated from the aurelia_arpes module. The updated bands contain the rotated bands.
+        - ``spec``: An object defining the spectral intensity. Generated from the aurelia_arpes module. The updated spectra contains the self-energy and matrix elements needed to calculate the new spectral intensity.
+             
+        """
         bands=spec.bands
         kx = bands.kpath[:, 0]
         ky = bands.kpath[:, 1]
@@ -55,9 +128,9 @@ class domain:
             krot[:, 0] = np.cos(np.deg2rad(self.az["az"][i])) * kx - np.sin(np.deg2rad(self.az["az"][i])) * ky
             krot[:, 1] = np.sin(np.deg2rad(self.az["az"][i])) * kx + np.cos(np.deg2rad(self.az["az"][i])) * ky
             Bands_r = griddata(krot, bands.bands[:,0:bands.Nbands], (kx, ky), method='nearest')
-            M_r = griddata(krot, spec.matrix_elements, (kx, ky), method='nearest')
-            ReS_r = spec.ReS
-            ImS_r = spec.ImS
+            M_r = griddata(krot, spec.matrix_elements[:,0:bands.Nbands], (kx, ky), method='nearest')
+            ReS_r = spec.ReS[:,0:bands.Nbands]
+            ImS_r = spec.ImS[:,0:bands.Nbands]
             bands.bands = np.concatenate((bands.bands, Bands_r), axis=1)
             spec.matrix_elements = np.concatenate((spec.matrix_elements, M_r), axis=1)
             spec.ReS = np.concatenate((spec.ReS, ReS_r), axis=1)
@@ -68,19 +141,64 @@ class domain:
         return(bands, spec)
     
     def Rmv_domain_rot(self, spec):
+        """
+        This function removes the rotational domains by removing the appended values from the following fields of the object ``spec``:
+
+        - ``Bands.bands``
+
+        - ``spec.matrix_elements``
+
+        - ``spec.ReS``
+
+        - ``spec.ImS``
+
+        - ``spec.domain``
+
+        - ``domain.type``: The string ``"rot"`` is removed
+
+        *Returned args*:
+
+        - - ``bands``: An object defining the bandstructure. Generated from the aurelia_arpes module. The updated bands contain the rotated bands.
+        - ``spec``: An object defining the spectral intensity. Generated from the aurelia_arpes module. The updated spectra contains the self-energy and matrix elements needed to calculate the new spectral intensity.
+
+        """
         bands=spec.bands
         bands.bands=bands.bands[:,0:bands.Nbands]
         spec.bands=bands
         spec.matrix_elements=spec.matrix_elements[:,0:bands.Nbands]
-        spec.domain=spec.domain[0,0:bands.Nbands]
-        spec.ReS=spec.ReS[0,0:bands.Nbands]
-        spec.ImS=spec.ImS[0,0:bands.Nbands]
+        spec.domain=spec.domain[:,0:bands.Nbands]
+        spec.ReS=spec.ReS[:,0:bands.Nbands]
+        spec.ImS=spec.ImS[:,0:bands.Nbands]
 
         del spec.domain_info
         self.type.remove('rot')
         return(bands, spec)
     
     def Make_domain_offset(self, arpes, speed='fast'):
+        r"""
+        This function creates domains originating from sample flakes at different offset angles than the dominant domain. 
+        
+        *args*: 
+        - ``arpes``: An object containing the simulated ARPES intensity and associated parameters. 
+        
+        *Optional args*:
+
+        - ``speed``: A string that takes two inputs, ``"fast"`` or ``"slow"``. Defaults to ``"fast"``.
+        
+            - Slow mode: The most accurate way of creating offset flakes is changing :math:`\theta_0`, :math:`\phi_0`, and using ``arpes.Make_angle_conv(domain)`` to calculate the spectra for each domain. However, the interpolation during momentum-to-angle conversion is slow. 
+            - Fast mode: Less accurate. We can simply take the spectrum and shift it in :math:`\theta_m` and :math:`\phi_m` by :math:`\theta_0` and :math:`\phi_0`. 
+        *Saved args*:
+
+        - ``domain.type``: A string ``"offset"`` indicating a flake domain is added.
+        - ``spec.domain_info``: The object domain, which contains the parameters specifying the rotational domain.
+        - ``arpes.domain``: Contains the intensities from the domains that are calculated.
+
+        *Returned args*:
+
+        - ``arpes``: An object containing the simulated ARPES intensity and associated parameters. 
+        
+        """
+
         if speed == 'fast':
             if arpes.dimension != 'sliceEk':
                 th = arpes.th
@@ -127,6 +245,17 @@ class domain:
         return(arpes)
     
     def Rmv_domain_offset(self, arpes):
+        """
+        This function removes the rotational domains by removing the fields of the object ``arpes``:
+        
+        - ``arpes.domain``
+        - ``arpes.domain_info``
+        - ``domain.type``: The string ``"offset"`` is removed.
+
+        *Returned args*:
+
+        - ``arpes``: An object containing the simulated ARPES intensity and associated parameters.
+        """
         if hasattr(arpes, 'domain')==True:
             del arpes.domain
             del arpes.domain_info
@@ -136,6 +265,61 @@ class domain:
         return(arpes)
 
 class experiment:      
+    r"""
+    This function initializes the ``experiment`` object used to convert ``Spec`` to ``ARPES`` in the ``aurelia_arpes`` module.
+
+    *args*:
+
+        - ``spec``: An object containing the spectral intensity calculated from the dispersion.
+
+    *Optional args*:
+
+    - ``angles``: A python dictionary defining the offset angles of the primary flake.
+
+        - To specify the angles, input a dictionary of the form ``angles={"az0": [], "th0": [], "ph0": []}``.  
+        - To set all offset angles to zero, input ``angles = "zero"``.  
+        - If no input is given, the offset angles ``th0`` and ``ph0`` are randomly determined on the interval [-10, 10], and ``az0`` is randomly selected on [0, 360].
+
+    - ``hv``: A float specifying the photon energy of the light that induces the photoemission process (in eV). If no input is given, a randomized default is calculated such that the momenta specified in Bands.klim are photoemitted.
+
+    - ``Ne``: An integer specifying the number of electrons collected. The default is randomly determined depending on ``spec.dimension``:
+
+        - ``"slicekk"``: :math:`N_e \in [10^4, 10^6]`
+        - ``"sliceEk"``: :math:`N_e \in [10^4, 10^7]`
+        - ``"cube"``: :math:`N_e \in [10^5, 10^8]`
+
+    - ``bkgd``: A dictionary specifying the type and strength of the background intensity. Flat, Shirley, and polynomial background are given by default.
+
+        - Flat background: ``bkgd["type"] = "flat"``. Optionally specify ``bkgd["flatA"]``, a float defining the amplitude of the flat background relative to the maximum intensity. Default random [0.01, 0.21].
+        - Shirley background: ``bkgd["type"] = "Shir"``. Optionally specify ``bkgd["ShirA"]``, a float defining the amplitude of Shirley background. Default random [0.01, 0.11].
+        - Polynomial background: ``bkgd["type"] = "poly"``. Optionally specify ``bkgd["polyA"]``, a  float defining the amplitude of polynomial background. Default random [0.01, 0.11], and ``bkgd["polyOrder"]`` Integer polynomial order. Default random [0, 5].
+
+    - ``detector``: A dictionary specifying the detector parameters. Has the following fields:
+
+        - ``detector["response"]``: String determining response type. Options:
+
+            - ``"flat"``: Uniform response
+            - ``"center"``: Higher response at center.  
+
+                - ```detector["sensitivity"]``: Float difference between center and edge (used only if ``response="center"``; default 0).
+
+        - ``detector["slit"]``: String specifying slit orientation. Options: ``"horizontal"``, ``"vertical"``.
+        - ``detector["counting mode"]``: String specifying counting mode. Options:
+
+            - ``"ADC"``: Lights up multiple pixels per electron event.
+            - ``"PC"``: Lights up only one electron per pixel; better for low counts.
+
+    Outputs of the function:
+
+    - ``exp.az0``: Azimuth offset angle (float)
+    - ``exp.th0``: Theta offset angle (float)
+    - ``exp.ph0``: Phi offset angle (float)
+    - ``exp.hv``: Photon energy (float)
+    - ``exp.Ne``: Number of electrons collected (int)
+    - ``exp.bkgd``: Background parameters (dictionary)
+    - ``exp.detector``: Detector parameters (dictionary)
+
+    """
     def __init__(self, spec, angles=None, hv=None, bkgd=None, Ne=None, detector=None):       
         ## parameters for k to angle conversion
         self.workfun=4+np.random.rand()
@@ -206,15 +390,27 @@ class experiment:
 
         if Ne is None:
             if spec.dimension == 'slicekk':      
-                self.Ne=round(10**(4+np.random.rand()*2))            
+                self.Ne=np.random.randint(10**4, 10**6)            
             elif spec.dimension == 'sliceEk':
-                self.Ne=round(10**(4+np.random.rand()*3))
+                self.Ne=np.random.randint(10**4, 10**7)    
             elif spec.dimension == 'cube':
-                self.Ne=round(10**(5+np.random.rand()*3))
+                self.Ne=np.random.randint(10**5, 10**6)    
         else:
-            self.Ne=Ne
+            self.Ne=int(Ne)
 
     def Make_bkgd(self, arpes):
+        """
+        This function adds various types of background intensity to the ARPES spectra simulation.
+
+        *args*:
+
+        - ``arpes``: An object defining the photoemission intensity. Calculated by the ``aurelia_arpes`` module.
+
+        *Saved args*:
+
+        - ``arpes.bkgd``: Overwrites the default value. A numpy array with the same dimensions as ``arpes.intensity`` containing the background.
+        """
+
         Amp = np.max(arpes.intensity)
         bkgd=np.zeros(arpes.intensity.shape)
         if 'flat' in self.bkgd["type"]:
@@ -249,6 +445,18 @@ class experiment:
         return(arpes)
     
     def Make_detector_responsivity(self, arpes):
+        """
+        The function creates the detector responsivity for the ARPES spectra simulation
+        
+        *args*:
+
+        - ``arpes``: An object defining the photoemission intensity. Calculated by the ``aurelia_arpes`` module.
+
+        *Saved args*:
+
+        - ``arpes.response``: Overwrites the default value. A numpy array with the same dimensions as ``arpes.intensity`` containing the detector response.
+        
+        """
         if self.detector["response"] == 'flat':
             response= np.ones(arpes.intensity.shape)
         elif self.detector["response"] == 'center':

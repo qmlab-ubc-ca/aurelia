@@ -1,0 +1,400 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Static parameters module &mdash; aurelia 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Plotting module" href="plots.html" />
+    <link rel="prev" title="ARPES module" href="arpes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/aurelia_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Static parameters module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#modifier">Modifier</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aurelia_static_vars.mod"><code class="docutils literal notranslate"><span class="pre">mod</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#domains">Domains</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aurelia_static_vars.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_static_vars.domain.Make_domain_offset"><code class="docutils literal notranslate"><span class="pre">domain.Make_domain_offset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_static_vars.domain.Make_domain_rot"><code class="docutils literal notranslate"><span class="pre">domain.Make_domain_rot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_static_vars.domain.Rmv_domain_offset"><code class="docutils literal notranslate"><span class="pre">domain.Rmv_domain_offset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_static_vars.domain.Rmv_domain_rot"><code class="docutils literal notranslate"><span class="pre">domain.Rmv_domain_rot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#experiment">Experiment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aurelia_static_vars.experiment"><code class="docutils literal notranslate"><span class="pre">experiment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_static_vars.experiment.Make_bkgd"><code class="docutils literal notranslate"><span class="pre">experiment.Make_bkgd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aurelia_static_vars.experiment.Make_detector_responsivity"><code class="docutils literal notranslate"><span class="pre">experiment.Make_detector_responsivity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plots.html">Plotting module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">hdf5 saving module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="derivations.html">Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">ARPES API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">aurelia</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Static parameters module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/experiment.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-aurelia_static_vars">
+<span id="static-parameters-module"></span><span id="static-vars"></span><h1>Static parameters module<a class="headerlink" href="#module-aurelia_static_vars" title="Link to this heading"></a></h1>
+<p>This module contains the static experimental parameters informing the ARPES simulation. It provides three main classes: <code class="docutils literal notranslate"><span class="pre">modifier</span></code>, <code class="docutils literal notranslate"><span class="pre">domain</span></code>, and <code class="docutils literal notranslate"><span class="pre">experiment</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">modifier</span></code>: Defines the electronic temperature of the Fermi-Dirac distribution and the resolution broadenings. It is used with the <code class="docutils literal notranslate"><span class="pre">Spec</span></code> object in the <code class="docutils literal notranslate"><span class="pre">aurelia_arpes</span></code> module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">domains</span></code>: Defines and adds rotational and offset (flake) domains to the ARPES intensity.</p>
+<p><code class="docutils literal notranslate"><span class="pre">experiment</span></code>: Defines the photoemission experimental parameters and experimental artifacts, such as the photon energy, angular acceptance, number of collected electrons, the type of detector, detector responsivity, and background intensity/noise.</p>
+<section id="modifier">
+<h2>Modifier<a class="headerlink" href="#modifier" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aurelia_static_vars.mod">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aurelia_static_vars.</span></span><span class="sig-name descname"><span class="pre">mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_static_vars.mod" title="Link to this definition"></a></dt>
+<dd><p>This function initializes the modifier object.</p>
+<p><em>Optional args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code>: A float defining the electronic temperature. If not given, it is a random value between 10 and 350. (Lower values can be given but the number of points in the energy dimension (<span class="math notranslate nohighlight">\(\omega\)</span>) the calculation must increase for it to be accurate, increasing computational time).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">resolution</span></code>: A python dictionary of the form <code class="docutils literal notranslate"><span class="pre">resolution</span> <span class="pre">=</span> <span class="pre">{&quot;ER&quot;:[],&quot;kR&quot;:[]</span> <span class="pre">}</span></code>, where <code class="docutils literal notranslate"><span class="pre">ER</span></code> (<code class="docutils literal notranslate"><span class="pre">kR</span></code>) are floats defining the energy (momentum/angular) resolution of the setup, respectively.</p></li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mod.Temp</span></code>: A float, the electronic temperature.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mod.ER</span></code>: A float, the energy resolution.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mod.kR</span></code>: A float, the momentum/angular resolution.</p></li>
+</ul>
+</dd></dl>
+
+</section>
+<section id="domains">
+<h2>Domains<a class="headerlink" href="#domains" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aurelia_static_vars.domain">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aurelia_static_vars.</span></span><span class="sig-name descname"><span class="pre">domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">az</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flake</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_static_vars.domain" title="Link to this definition"></a></dt>
+<dd><p>This function initializes the flake and rotational domains that may be present in the ARPES experiment</p>
+<p><em>args</em>:</p>
+<ul>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">az</span></code>: A python dictionary specifying the rotational domains. It has the following fields:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">az[&quot;Num&quot;]</span></code>: An integer <span class="math notranslate nohighlight">\(r\)</span> determining the number of rotational domains. If not specified, this number is chosen randomly on the interval [1, 3].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">az[&quot;az&quot;]</span></code>: A numpy array of dimension <span class="math notranslate nohighlight">\(r \times 1\)</span>. Contains the azimuth angle of each rotational domain. If not specified, the elements are chosen randomly on the interval [-30, 30].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">az[&quot;amp&quot;]</span></code>: A numpy array of dimension <span class="math notranslate nohighlight">\(r \times 1\)</span>.  Contains the relative intensity amplitude of each rotational domain. If not specified, the elements are chosen randomly on the interval [0, 1].</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flake</span></code>: A python dictionary specifying the flake domains. It has the following fields:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">flake[&quot;Num&quot;]</span></code>: An integer <span class="math notranslate nohighlight">\(f\)</span> determining the number of flake domains. If not specified, this number is chosen randomly on the interval [0, 5].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flake[&quot;th&quot;]</span></code>: A numpy array of dimension <span class="math notranslate nohighlight">\(f \times 1\)</span>. Contains the <code class="docutils literal notranslate"><span class="pre">theta</span></code> offset angle of each flake domain. If not specified, the elements are chosen randomly on the interval [-5, 5].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flake[&quot;ph&quot;]</span></code>: A numpy array of dimension <span class="math notranslate nohighlight">\(f \times 1\)</span>. Contains the <code class="docutils literal notranslate"><span class="pre">phi</span></code> offset angle of each flake domain. If not specified, the elements are chosen randomly on the interval [-5, 5].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flake[&quot;amp&quot;]</span></code>: A numpy array of dimension <span class="math notranslate nohighlight">\(f \times 1\)</span>. Contains the relative intensity amplitude of each flake domain. If not specified, the elements are chosen randomly on the interval [0, 1].</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">domain.az</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">domain.flake</span></code></p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_static_vars.domain.Make_domain_offset">
+<span class="sig-name descname"><span class="pre">Make_domain_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arpes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fast'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_static_vars.domain.Make_domain_offset" title="Link to this definition"></a></dt>
+<dd><p>This function creates domains originating from sample flakes at different offset angles than the dominant domain.</p>
+<p><em>args</em>: 
+- <code class="docutils literal notranslate"><span class="pre">arpes</span></code>: An object containing the simulated ARPES intensity and associated parameters.</p>
+<p><em>Optional args</em>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">speed</span></code>: A string that takes two inputs, <code class="docutils literal notranslate"><span class="pre">&quot;fast&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;slow&quot;</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;fast&quot;</span></code>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Slow mode: The most accurate way of creating offset flakes is changing <span class="math notranslate nohighlight">\(\theta_0\)</span>, <span class="math notranslate nohighlight">\(\phi_0\)</span>, and using <code class="docutils literal notranslate"><span class="pre">arpes.Make_angle_conv(domain)</span></code> to calculate the spectra for each domain. However, the interpolation during momentum-to-angle conversion is slow.</p></li>
+<li><p>Fast mode: Less accurate. We can simply take the spectrum and shift it in <span class="math notranslate nohighlight">\(\theta_m\)</span> and <span class="math notranslate nohighlight">\(\phi_m\)</span> by <span class="math notranslate nohighlight">\(\theta_0\)</span> and <span class="math notranslate nohighlight">\(\phi_0\)</span>.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">domain.type</span></code>: A string <code class="docutils literal notranslate"><span class="pre">&quot;offset&quot;</span></code> indicating a flake domain is added.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.domain_info</span></code>: The object domain, which contains the parameters specifying the rotational domain.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.domain</span></code>: Contains the intensities from the domains that are calculated.</p></li>
+</ul>
+<p><em>Returned args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes</span></code>: An object containing the simulated ARPES intensity and associated parameters.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_static_vars.domain.Make_domain_rot">
+<span class="sig-name descname"><span class="pre">Make_domain_rot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_static_vars.domain.Make_domain_rot" title="Link to this definition"></a></dt>
+<dd><p>This function creates rotational domains in the spectra. 
+Computationally, this is fastest by rotating the k-path, interpolating the bands, addign them to Band.bands, and calculating the new spectral intensity.</p>
+<p><em>args</em>:</p>
+<ul class="simple">
+<li><p>spec: An object containing the spectral intensity. Generated from the <code class="docutils literal notranslate"><span class="pre">aurelia_arpes</span></code> module.</p></li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">domain.type</span></code>: A string <code class="docutils literal notranslate"><span class="pre">&quot;rot&quot;</span></code> indicating a rotational domain is added.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.domain_info</span></code>: The object domain, which contains the parameters specifying the rotational domain.</p></li>
+</ul>
+<p><em>Returned args</em>:
+- <code class="docutils literal notranslate"><span class="pre">bands</span></code>: An object defining the bandstructure. Generated from the aurelia_arpes module. The updated bands contain the rotated bands.
+- <code class="docutils literal notranslate"><span class="pre">spec</span></code>: An object defining the spectral intensity. Generated from the aurelia_arpes module. The updated spectra contains the self-energy and matrix elements needed to calculate the new spectral intensity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_static_vars.domain.Rmv_domain_offset">
+<span class="sig-name descname"><span class="pre">Rmv_domain_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arpes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_static_vars.domain.Rmv_domain_offset" title="Link to this definition"></a></dt>
+<dd><p>This function removes the rotational domains by removing the fields of the object <code class="docutils literal notranslate"><span class="pre">arpes</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.domain</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.domain_info</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">domain.type</span></code>: The string <code class="docutils literal notranslate"><span class="pre">&quot;offset&quot;</span></code> is removed.</p></li>
+</ul>
+<p><em>Returned args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes</span></code>: An object containing the simulated ARPES intensity and associated parameters.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_static_vars.domain.Rmv_domain_rot">
+<span class="sig-name descname"><span class="pre">Rmv_domain_rot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_static_vars.domain.Rmv_domain_rot" title="Link to this definition"></a></dt>
+<dd><p>This function removes the rotational domains by removing the appended values from the following fields of the object <code class="docutils literal notranslate"><span class="pre">spec</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Bands.bands</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.matrix_elements</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.ReS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.ImS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec.domain</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">domain.type</span></code>: The string <code class="docutils literal notranslate"><span class="pre">&quot;rot&quot;</span></code> is removed</p></li>
+</ul>
+<p><em>Returned args</em>:</p>
+<ul class="simple">
+<li><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">bands</span></code>: An object defining the bandstructure. Generated from the aurelia_arpes module. The updated bands contain the rotated bands.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spec</span></code>: An object defining the spectral intensity. Generated from the aurelia_arpes module. The updated spectra contains the self-energy and matrix elements needed to calculate the new spectral intensity.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="experiment">
+<h2>Experiment<a class="headerlink" href="#experiment" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aurelia_static_vars.experiment">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aurelia_static_vars.</span></span><span class="sig-name descname"><span class="pre">experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bkgd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ne</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_static_vars.experiment" title="Link to this definition"></a></dt>
+<dd><p>This function initializes the <code class="docutils literal notranslate"><span class="pre">experiment</span></code> object used to convert <code class="docutils literal notranslate"><span class="pre">Spec</span></code> to <code class="docutils literal notranslate"><span class="pre">ARPES</span></code> in the <code class="docutils literal notranslate"><span class="pre">aurelia_arpes</span></code> module.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spec</span></code>: An object containing the spectral intensity calculated from the dispersion.</p></li>
+</ul>
+</div></blockquote>
+<p><em>Optional args</em>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">angles</span></code>: A python dictionary defining the offset angles of the primary flake.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>To specify the angles, input a dictionary of the form <code class="docutils literal notranslate"><span class="pre">angles={&quot;az0&quot;:</span> <span class="pre">[],</span> <span class="pre">&quot;th0&quot;:</span> <span class="pre">[],</span> <span class="pre">&quot;ph0&quot;:</span> <span class="pre">[]}</span></code>.</p></li>
+<li><p>To set all offset angles to zero, input <code class="docutils literal notranslate"><span class="pre">angles</span> <span class="pre">=</span> <span class="pre">&quot;zero&quot;</span></code>.</p></li>
+<li><p>If no input is given, the offset angles <code class="docutils literal notranslate"><span class="pre">th0</span></code> and <code class="docutils literal notranslate"><span class="pre">ph0</span></code> are randomly determined on the interval [-10, 10], and <code class="docutils literal notranslate"><span class="pre">az0</span></code> is randomly selected on [0, 360].</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hv</span></code>: A float specifying the photon energy of the light that induces the photoemission process (in eV). If no input is given, a randomized default is calculated such that the momenta specified in Bands.klim are photoemitted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Ne</span></code>: An integer specifying the number of electrons collected. The default is randomly determined depending on <code class="docutils literal notranslate"><span class="pre">spec.dimension</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;slicekk&quot;</span></code>: <span class="math notranslate nohighlight">\(N_e \in [10^4, 10^6]\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sliceEk&quot;</span></code>: <span class="math notranslate nohighlight">\(N_e \in [10^4, 10^7]\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;cube&quot;</span></code>: <span class="math notranslate nohighlight">\(N_e \in [10^5, 10^8]\)</span></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bkgd</span></code>: A dictionary specifying the type and strength of the background intensity. Flat, Shirley, and polynomial background are given by default.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Flat background: <code class="docutils literal notranslate"><span class="pre">bkgd[&quot;type&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;flat&quot;</span></code>. Optionally specify <code class="docutils literal notranslate"><span class="pre">bkgd[&quot;flatA&quot;]</span></code>, a float defining the amplitude of the flat background relative to the maximum intensity. Default random [0.01, 0.21].</p></li>
+<li><p>Shirley background: <code class="docutils literal notranslate"><span class="pre">bkgd[&quot;type&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;Shir&quot;</span></code>. Optionally specify <code class="docutils literal notranslate"><span class="pre">bkgd[&quot;ShirA&quot;]</span></code>, a float defining the amplitude of Shirley background. Default random [0.01, 0.11].</p></li>
+<li><p>Polynomial background: <code class="docutils literal notranslate"><span class="pre">bkgd[&quot;type&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;poly&quot;</span></code>. Optionally specify <code class="docutils literal notranslate"><span class="pre">bkgd[&quot;polyA&quot;]</span></code>, a  float defining the amplitude of polynomial background. Default random [0.01, 0.11], and <code class="docutils literal notranslate"><span class="pre">bkgd[&quot;polyOrder&quot;]</span></code> Integer polynomial order. Default random [0, 5].</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">detector</span></code>: A dictionary specifying the detector parameters. Has the following fields:</p>
+<blockquote>
+<div><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">detector[&quot;response&quot;]</span></code>: String determining response type. Options:</p>
+<blockquote>
+<div><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;flat&quot;</span></code>: Uniform response</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code>: Higher response at center.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">`detector[&quot;sensitivity&quot;]</span></code>: Float difference between center and edge (used only if <code class="docutils literal notranslate"><span class="pre">response=&quot;center&quot;</span></code>; default 0).</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">detector[&quot;slit&quot;]</span></code>: String specifying slit orientation. Options: <code class="docutils literal notranslate"><span class="pre">&quot;horizontal&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;vertical&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">detector[&quot;counting</span> <span class="pre">mode&quot;]</span></code>: String specifying counting mode. Options:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;ADC&quot;</span></code>: Lights up multiple pixels per electron event.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;PC&quot;</span></code>: Lights up only one electron per pixel; better for low counts.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>Outputs of the function:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">exp.az0</span></code>: Azimuth offset angle (float)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp.th0</span></code>: Theta offset angle (float)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp.ph0</span></code>: Phi offset angle (float)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp.hv</span></code>: Photon energy (float)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp.Ne</span></code>: Number of electrons collected (int)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp.bkgd</span></code>: Background parameters (dictionary)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp.detector</span></code>: Detector parameters (dictionary)</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_static_vars.experiment.Make_bkgd">
+<span class="sig-name descname"><span class="pre">Make_bkgd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arpes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_static_vars.experiment.Make_bkgd" title="Link to this definition"></a></dt>
+<dd><p>This function adds various types of background intensity to the ARPES spectra simulation.</p>
+<p><em>args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes</span></code>: An object defining the photoemission intensity. Calculated by the <code class="docutils literal notranslate"><span class="pre">aurelia_arpes</span></code> module.</p></li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.bkgd</span></code>: Overwrites the default value. A numpy array with the same dimensions as <code class="docutils literal notranslate"><span class="pre">arpes.intensity</span></code> containing the background.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aurelia_static_vars.experiment.Make_detector_responsivity">
+<span class="sig-name descname"><span class="pre">Make_detector_responsivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arpes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aurelia_static_vars.experiment.Make_detector_responsivity" title="Link to this definition"></a></dt>
+<dd><p>The function creates the detector responsivity for the ARPES spectra simulation</p>
+<p><em>args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes</span></code>: An object defining the photoemission intensity. Calculated by the <code class="docutils literal notranslate"><span class="pre">aurelia_arpes</span></code> module.</p></li>
+</ul>
+<p><em>Saved args</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arpes.response</span></code>: Overwrites the default value. A numpy array with the same dimensions as <code class="docutils literal notranslate"><span class="pre">arpes.intensity</span></code> containing the detector response.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="arpes.html" class="btn btn-neutral float-left" title="ARPES module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plots.html" class="btn btn-neutral float-right" title="Plotting module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MengXing Na, Matteo Michiardi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

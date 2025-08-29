@@ -1,9 +1,16 @@
-#%%
+"""
+This script provides functionality to serialize Python dictionaries and class instances into HDF5 files using the ``h5py`` library. 
+It supports nested structures, compresses NumPy arrays, and stores primitive types as attributes. 
+These functions are used to save the simulations into .h5 files.
+"""
 import numpy as np
 import h5py
 import os
 
 class DictGroup(h5py.Group):
+    """
+    A helper class that recursively stores dictionary contents into HDF5 groups and datasets.
+    """
     def __init__(self, parent, name, data):
         super().__init__(parent, name)
         for key, value in data.items():
@@ -18,6 +25,10 @@ class DictGroup(h5py.Group):
             self.create_dataset(key, data=value)
 
 def convert_strings_to_utf8(obj):
+    """
+    This function recursively converts strings in objects to UTF-8 encoded bytes for HDF5 compatibility. 
+    Handles strings, lists, tuples, dictionaries, and objects with ``__dict__``.
+    """
     if isinstance(obj, str):
         return obj.encode('utf-8')
     elif isinstance(obj, (list, tuple)):
@@ -33,6 +44,17 @@ def convert_strings_to_utf8(obj):
         return obj
 
 def save_dict_to_hdf5(dict_obj, folderpath, filename, groupname):
+    """
+    Saves a dictionary into an HDF5 file.
+
+    *args*:
+
+    - ``dict_obj``: A python dictionary. Dictionary to save.
+    - ``folderpath``: A string. Path to save the file.
+    - ``filename``: A string. Name of the HDF5 file.
+    - ``groupname``: A string. Name of the group inside the file.
+
+    """
     dataset_types = [np.ndarray]
     attributes_types = [int,str,float,np.float32, np.float64, np.int64,tuple]
     dict_types = [dict]
@@ -51,7 +73,17 @@ def save_dict_to_hdf5(dict_obj, folderpath, filename, groupname):
 
 #class Class2H5:
 def save_class_to_hdf5(obj,folderpath, filename, groupname=None):
+    """
+    Saves a class into an HDF5 file.
 
+    *args*:
+
+    - ``obj``: A python object. Object to save.
+    - ``folderpath``: A string. Path to save the file.
+    - ``filename``: A string. Name of the HDF5 file.
+    - ``groupname``: A string. Name of the group inside the file.
+
+    """
     # Open the HDF5 file for writing
     dataset_types = [np.ndarray]
     attributes_types = [int,str,float,np.float32, np.float64, np.int64,tuple]

@@ -1,3 +1,24 @@
+r"""
+
+This module contains the building blocks of the ARPES simulation. It provides three main classes: ``Bands``, ``Spec``, and ``ARPES``.
+
+``Bands``: Defines the electronic dispersion.
+
+- The in-plane k-path is specified by a list of :math:`k_x` and :math:`k_y` points.
+- The band dispersion is calculated along the path according to a tight-binding model.
+- Alternatively, the band structure can be imported from an external file.
+
+``Spec``: Calculates the ARPES spectra expected from the electronic dispersion.
+
+1. Compute the one-electron removal spectral function from the electronic dispersion and self-energy.
+2. Define the photoemission matrix elements.
+3. Apply the Fermi-Dirac distribution for the effective electronic temperature and convolve with a Gaussian to include resolution broadening.
+
+``ARPES``: Simulates the ARPES data that would be experimentally collected.
+
+- Transforms ``Spec``, calculated in crystal momentum and binding energy: (:math:`\mathbf{k}`, :math:`\omega`) into emission angles and kinetic energy (:math:`\theta`, :math:`\phi`, :math:`E_\text{k}`).
+- Creates a probability distribution based on the spectra and simulates the ARPES spectrum based on N electron events. 
+"""
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
@@ -7,7 +28,25 @@ from scipy.signal import convolve
 from scipy.stats import norm
 #%%
 class Bands:    
-    # Calculates the bandstructure based on a tight-binding model
+    r"""
+    Calculates the bandstructure based on a tight-binding model. The input arguments are saved in the ``Bands`` object.
+
+    *Optional args*:   
+    
+    - ``symmetry``: A string. Defines the lattice of the tight-binding model. The available inputs are 'rectangle', 'square', 'hexagonal', 'honeycomb'. If an input is not given, one is chosen at random.
+    
+    - ``klim``: A :math:`2 \times 2` numpy array defining the limits of :math:`k_x` and :math:`k_y` in the list. If an input is not given, the lower limit is chosen randomly between :math:`[-1,-0.5]`, and the upper limit is chosen randomly between :math:`[0.5, 1]`.
+
+    - ``Nbands``: An integer defining the number of bands in the tight-binding model. If an input is not given, one is chosen at random between :math:`[1, 5]`.
+
+    - ``warp``: A string. "on" or "off". Toggles next-nearest neighbour hopping in the tight-binding model.
+
+    - ``Npts``: A :math:`2 \times 1` numpy array (elements are integers) defining the number of points calculated in the :math:`k_x` and :math:`k_y` dimensions.
+
+    - ``edges``: A float slightly larger than one. Since we calculate a limited region of k-space, interpolation may be off at the edges if we use large offset angles in the experiment. Here, the k-space edge is padded and later cropped to exclude artifacts.
+
+    """
+    
     def __init__(self,symmetry=None, klim=None, Nbands=None, warp=None, Npts=None, edges=None):
         symm=['rectangle','square','hexagonal','honeycomb']
         if symmetry is None:
@@ -41,6 +80,23 @@ class Bands:
         else:
             self.edges=edges
     def Make_kpath(self):
+        r"""
+        This function defines the :math:`k_x` and :math:`k_y` grid the bands are calculated on. 
+        The edges are padded so that rotation and interpolation do not create artifacts. 
+        The calculation of the dispersion is not particularly time-intensive, so a grid of points is typically calculated. 
+        To speed up computation, the ARPES spectra can be calculated over just :math:`k_x`, but the grid of points are needed for interpolation in the case of rotational or offset domains.
+        
+        This function adds the following to the ``Bands`` object:
+
+        *Saved args*:   
+    
+        - ``Bands.kpath``: A :math:`N \times 2` numpy array defining the k-path along which the dispersion is calculated. :math:`N` is the product of the elements of ``Bands.Npts``. The first and second columns correspond to :math:`k_x` and :math:`k_y`, respectively.
+
+        - ``Bands.kax``: A :math:`N_\text{pts}^x \times 1` numpy array defining the :math:`k_x` axis. Used for plotting purposes.
+
+        - ``Bands.kay``: A :math:`N_\text{pts}^y \times 1` numpy array defining the :math:`k_y` axis. Used for plotting purposes.
+    
+        """
         # Define k axes, the edges are added so that rotatoin and interpolation does not create artifacts
         # kax and kay are used for plotting purposes
         k1 = np.linspace(self.klim[0,0], self.klim[1,0], self.Npts[0]) * self.edges
@@ -55,13 +111,45 @@ class Bands:
         self.kpath[:,1] = KY.reshape((np.size(KY)))
 
     def Make_bands(self, tb=None, lattice=None):   
-        # tb are the tight-binding hopping parameters and center energies.
-        # tb={"E0: [], t: "} E0 and t must be an array of dim [1, Nbands]. 
-        # t must be dim [2, Nbands] if the symmetry is rectangular.
+        r"""
+        This function calculates the dispersion using a tight-binding model.
 
-        # lattice are the length of the lattice vectors.
-        # lattice = {"a": number, "b": number}.
-        # b is only needed for rectangulr symmetry
+        *Optional args*:   
+
+        - ``tb``: A Python dictionary representing the tight-binding parameters. The dictionary is of the form:
+
+        ::
+
+            tb = {"E0": [], "t": []}
+
+        - :math:`E_0` and :math:`t` must be NumPy arrays of dimension :math:`[1 , N_\text{bands}]`.
+        - :math:`E_0` contains the center energies of the bands.
+        - :math:`t` contains the hopping parameter of each band.
+
+        If the lattice is rectangular (as defined in ``Bands.symmetry``), then
+        :math:`t` must have shape :math:`[2, N_\text{bands}]`.
+
+        If no input is provided, :math:`E_0` is randomly generated in the interval [-1, 0],
+        and :math:`t` is randomly generated in the interval [-1, 1].
+
+        - ``lattice``: A Python dictionary of the lattice parameters. 
+
+        These lattice parameters define the size of the Brillouin zone and -- by extension -- the field of view given by the limits set in ``Bands.klim``. 
+        The dictionary is of the form:
+
+        ::
+
+            lattice = {"a": [], "b": []}
+
+        - :math:`a` and :math:`b`  are floats. 
+
+        If no input is provided, :math:`a` and math:`b` are calculated from the k-space limits.
+
+        *Saved args*:   
+
+        - ``Bands.bands``: A :math:`[N , N_{\text{bands}}` numpy array defining the dispersion of each band along the k-path. N is given by the product of ``Bands.Npts``.
+    
+        """
         kx = self.kpath[:,0]
         ky = self.kpath[:,1]
         self.bands = np.zeros((len(self.kpath), self.Nbands))
@@ -132,8 +220,28 @@ class Bands:
                     self.bands[:,2*i]=self.bands[:,2*i]+nnn
                     self.bands[:,2*i+1]=self.bands[:,2*i+1]+nnn
     def Import_bands(self, filename):
-        # Imports bands from a file. The file should have kx in column 1, ky in column 2.
-        # Each band should be in its own column from 3 onwards.
+        r"""
+        This function imports bands from a file. The file should have kx in column 1, ky in column 2. Each band should be in its own column from 3 onwards.
+
+        *args*:
+
+        - ``filename``: A string. The name of the file to be imported.
+
+        *Saved args*: 
+
+        - The following and read from the file and saved to the Bands object: ``Npts``, ``kax``, ``kay``, ``klim``, ``kpath``, ``bands``, ``Nbands``   
+
+        - The following parameters are defined statically: 
+
+        ::
+
+            bands.edges = 1
+            bands.warp = "off"
+            bands.symmetry = "custom" 
+
+    
+        """
+
         import csv
         with open(filename) as file:
             reader = csv.reader(file)
@@ -171,6 +279,9 @@ class Bands:
         for i in range(self.Nbands):
             self.bands[:,i]=np.array([float(row_dict[headers[i+2]]) for row_dict in data])
     def print_variables(self):
+        """
+        Provides a summary of variables used to define the band structure.
+        """
         print('Lattice symmetry:', self.symmetry, 'Warp:', self.warp)
         print('Nbands:', self.Nbands)
         print('kx lim:', self.klim[:,0], 'Nptsx:', self.Npts[0])
@@ -178,7 +289,39 @@ class Bands:
 
 #%%
 class Spec:
-    # Calculates the spectral function, adds the Fermi-Dirac distribution, matrix elements and resolution broadening.
+    r"""
+    Calculates the photoemission spectra. Includes the Fermi-Dirac distribution, matrix elements and resolution broadening.
+
+    *args:*
+
+    - The input ``bands`` is an object. Defines the electronic dispersion and k-path.
+
+    *Optional args:*
+
+    - ``dimension``: A string. Defines the dimension of the calculation, three modes are available.
+
+        - The input "cube" calculates the spectra in binding energy :math:`\omega`, and the crystal momenta :math:`k_x`, and :math:`k_y`.
+        - The input "sliceEk" calculates the spectra in :math:`\omega` and :math:`k_x`. The "dispersion cut".
+        - The input "slicekk" calculates the spectra in :math:`k_x` and :math:`k_y`. The "Fermi surface" or "constant energy cut". 
+    - ``Omega``: A :math:`M \times 1` numpy array defining the binding energy range points over which the photoemission spectra are calculated.
+
+    *Saved args:*
+
+    - ``spec.bands`` : The object defining the electronic dispersion and k-path.
+
+    - ``spec.kax`` : numpy array of shape :math:`(N_\text{pts}^x, 1)`. Defines the :math:`k_x` axis. Used for plotting purposes.
+
+    - ``spec.kay`` : numpy array of shape :math:`(N_\text{pts}^y, 1)`. Defines the :math:`k_y` axis. Used for plotting purposes.
+
+    - ``spec.matrix_elements`` : numpy array of shape :math:`(N, N_\text{bands})`. Matrix elements of each band along the k-path. Same shape as ``Bands.bands``. Initialized as an array of ones.
+
+    - ``spec.ReS`` : numpy array of shape :math:`(M, N_\text{bands})`. The real part of the self-energy, initialized as zeros.  
+
+    - ``spec.ImS`` : numpy array of shape :math:`(M, N_\text{bands})`. The real part of the self-energy, initialized as with a single value of 0.2.  
+
+    - ``spec.domain`` : numpy array. Defines the relative intensity of rotational and offset domains. Initialized (for the primary domain) as an array of ones with shape :math:`(1, N_{\text{bands}})`.
+    
+    """ 
     def __init__(self, bands, dimension=None, Omega=None):
         # bands are calculated by the Bands class. 
         # dimension can be 2D (slice) or 3D (cube). dimension = "slicekk" or "sliceEk" or "cube"
@@ -205,6 +348,26 @@ class Spec:
         self.domain=np.ones((1,bands.bands.shape[1]))
 
     def Make_self_energy(self, SE):
+        r"""
+        This function is optional, since the self-energy is already initialized. 
+        For more realistic ARPES spectra, two types of self-energy are available through the input dictionary ``SE``:
+
+        *args*:
+
+        - ``SE``: a python dictionary. The key ``type`` accepts two strings: ``"FL"`` or ``"kink"``, corresponding to Fermi-liquid or electron-boson kink. 
+
+            - for Fermi-liquid type self energy, additional fields ``val`` and ``ImS0`` may be specified (or will be randomly chosen)
+            - for electron-boson kink, additional fields ``ImS0``, ``ImS1``, ``Amp``, ``Ekink``, and ``gamma`` may be specified (or will be randomly chosen).
+
+        *Saved args:*
+
+        - ``spec.ReS`` : numpy array of shape :math:`(M, N_\text{bands})`. The real part of the self-energy.  
+
+        - ``spec.ImS`` : numpy array of shape :math:`(M, N_\text{bands})`. The real part of the self-energy.  
+
+        - ``spec.SE`` : the python dictionary with parameters used in the calculation of the self-energy.
+            
+        """
         Nbands=self.bands.bands.shape[1]
         if SE["type"] == 'FL':
             if 'val' not in SE:                               
@@ -243,6 +406,27 @@ class Spec:
         self.SE=SE
         
     def Make_specfun(self, mod):
+        r"""
+        This function calculates the photoemission spectral intensity based on the band structure as well as the self-energy given.
+
+        *args*:
+        - ``mod``: a Python dictionary of the form ``mod = {"ER": [], "kR": [], "Temp": []}``, 
+        where the three fields define the energy resolution, the angular resolution, 
+        and the electronic temperature, respectively. 
+        ``mod`` is an object generated by the ``aurelia_static_vars`` module. 
+
+        The outputs of the function are:
+
+        - ``spec.mod``: The Python dictionary which collects the modification parameters.
+
+        - ``spec.specfun``: A numpy array with a dimension specified by ``spec.dimension``, such that:
+
+            - ``cube``: :math:`M \times N_{pts}^x \times N_{pts}^y`
+            - ``sliceEk``: :math:`M \times N_{pts}^x`
+            - ``slicekk``: :math:`1 \times N_{pts}^x \times N_{pts}^y`
+
+        """
+
         self.mod=mod
         bands=self.bands
         Sb = bands.bands.shape
@@ -293,6 +477,18 @@ class Spec:
             self.specfun=np.transpose(A, (0,2,1))
 
     def Make_specmod(self, mod):
+        r"""   
+        This function modifies the intensity in ``self.specfun`` by adding the Fermi-Dirac distribution and resolution broadening.  
+
+        *args*:
+        
+        - ``mod``: an object generated the *aurelia_static_vars* module. Defines the energy resolution, the angular resolution, and the electronic temperature.  
+        
+        *Saved args*:
+
+        - ``spec.specfun``: The modified intensity replaces that previous calculated via spec.Make_specfun(mod)
+
+        """
         kB = 8.6196e-05
         #Add Fermi Dirac and resolutions        
         ce = mod.ER / (2 * np.sqrt(2 * np.log(2)))
@@ -328,7 +524,23 @@ class Spec:
         self.specfun=A_res
 
     def Make_matrix_elements(self, ME = None):
-        # Specify matrix element type
+        r"""
+        This function creates fake matrix elements aimed at varying the intensity of bands to mimic photoemission intensity. 
+
+        *args:*
+
+        - A Python dictionary. Defines the type of fake photoemission matrix elements that are generated. Accepts three strings.
+
+            - ``"symm"``: Gives matrix elements the same symmetry as that of the tight-binding model, in that they are periodic in k-space in the same way.
+            - ``"rot"`` : Gives matrix elements with rotational symmetry, which mimics the orbital selectivity of linear and/or circularly polarized light.
+            - ``"poly"``: Gives matrix elements defined by a random polynomial. Used to modulate the intensity of the bands and is used to mimic the unpredictable effects of experimental geometry variance in the light. 
+
+        *Saved args:*
+
+        - ``spec.matrix_elements``: A NumPy array defining the matrix elwith the same dimensions as ``Bands.bands``. 
+        - ``spec.ME``: The Python dictionary specifying parameters of the matrix-element calculation.
+            
+        """       
         if ME is None:
             ME = {"type": ['symm', 'poly'], "polyN": np.random.randint(1,6)}
         else:
@@ -368,21 +580,25 @@ class Spec:
                     M[:, 2*i+1] = M[:, 2*i]
             elif self.bands.symmetry == 'custom':
                 for i in range(self.bands.Nbands):
-                    M[:, i]=np.zeros((kx.shape))
+                    M[:, i]=np.ones((kx.shape))
         if 'poly' in self.ME["type"]:
             coeffs = np.random.randn(self.ME["polyN"]+1,self.ME["polyN"] +1) # generate random coefficients
             x, y = np.meshgrid(self.bands.kax, self.bands.kay) # create a grid of x and y values
             Mpoly =  np.polynomial.polynomial.polyval2d(x, y, coeffs)
             for i in range(self.bands.bands.shape[1]):
-                M[:,i] = M[:,i]+np.random.rand()*np.reshape(Mpoly, len(kx))
+                M[:,i] = M[:,i]*np.random.rand()*np.reshape(Mpoly, len(kx))
         if 'rot' in self.ME["type"]:
             phi=np.arctan(ky/kx)
             for i in range(self.bands.bands.shape[1]):
-                M[:,i] = M[:,i]+np.random.rand()*np.cos(phi*self.ME["rotN"])*0.5
+                M[:,i] = M[:,i]*np.random.rand()*np.cos(phi*self.ME["rotN"])*0.5
+        #Normalize the matrix elements        
         for i in range(self.bands.bands.shape[1]):
             M[:, i] = np.random.rand() * (M[:, i] - np.min(M[:, i])) / np.abs(np.max(M[:, i]))
         self.matrix_elements=M
     def print_variables(self):
+        """
+        Provides a summary of variables used to calculate the measured spectral intensity.
+        """
         print('Spec dimension:', self.dimension)
         if self.dimension != 'cube':
             print('Slice const:', self.slice_const)
@@ -394,6 +610,44 @@ class Spec:
         print('ER:', round(self.mod.ER, 1), ' Temp:',round(self.mod.Temp), ' kR:', round(self.mod.kR,2))        
 
 class ARPES:
+    r"""
+    This function initializes the ARPES simulation.
+    
+    *args*:
+
+    - ``spec``: An object containing the spectral intensity calculated from the dispersion.
+
+    - ``exp``: An object containing the experimental parameters, initialized from the aurelia_static_vars module.
+
+    *Optional args*:
+
+    - ``dimension``: A string defining the dimension of the calculation. Three modes are available:
+
+        - ``"cube"``: Spectra in binding energy, :math:`k_x`, and :math:`k_y`.  
+        - ``"sliceEk"``: Spectra in binding energy and :math:`k_x` (dispersion cut).  
+        - ``"slicekk"``: Spectra in :math:`k_x` and :math:`k_y` (Fermi surface).  
+
+    The default ``dimension`` string is the same as ``Spec.dimension``. If ``Spec.dimension = "cube"``, then ``arpes.dimension`` can be set to ``"sliceEk"`` or ``"slicekk"``.  
+    This allows offset and rotational domains to be accurately calculated, while saving computational time and file size.
+
+    - ``ang_lim``: A python dictionary with the fields ``ang_lim["th"]`` and ``ang_lim["ph"]``. The values are 2-element numpy arrays defining the limits of :math:`\theta` and :math:`\phi` seen by the detector. If not specified, the angle limits are calculated using the k-space limits in ``Spec``.  
+    
+    *Saved args*:
+
+    - ``arpes.spec``: An object containing the spectral intensity calculated from the dispersion.
+
+    - ``arpes.exp``: An object containing the experimental parameters.
+
+    - ``arpes.Ek``: The kinetic energy axis, calculated as:
+
+    - ``arpes.dimension``: A string defining the dimension of the calculation.
+
+    - ``arpes.th``: A NumPy array of shape :math:`N_{pts}^x \times 1`. Defines the angles along the :math:`k_x` direction.
+
+    - ``arpes.ph``: A NumPy array of shape :math:`N_{pts}^y \times 1`. Defines the angles along the :math:`k_y` direction.
+    
+    - ``arpes.crop``: A boolean. Checks if the edges have been cropped. Initialized as *false*. The edges are defined by ``Bands.edges``. 
+    """
     def __init__(self, spec, exp, ang_lim=None, dimension=None):
         #Define Units
         hbar=6.626070040e-34/(2*np.pi)
@@ -421,10 +675,45 @@ class ARPES:
             th_lim[:,0] = ang_lim["th"]
             if self.dimension != 'sliceEk':
                 th_lim[:,1] = ang_lim["ph"]
-        self.th=0.99*np.linspace(th_lim[0,0], th_lim[1,0], spec.bands.Npts[0])-exp.th0
-        self.ph=0.99*np.linspace(th_lim[0,1], th_lim[1,1], spec.bands.Npts[1])-exp.ph0
+        edge=(1-1/self.spec.bands.edges)
+        self.th=1/(1-edge)*np.linspace(th_lim[0,0], th_lim[1,0], spec.bands.Npts[0])
+        self.ph=1/(1-edge)*np.linspace(th_lim[0,1], th_lim[1,1], spec.bands.Npts[1])
         self.anglim=th_lim
+        self.crop = False
+
     def Make_angle_conv(self, const=None, domain=None):
+        r"""
+        This function converts the intensity stored in ``spec.specfun`` in momentum and binding energy to ``arpes.intensity`` in angle and kinetic energy.
+        
+        *args*:
+
+        - ``const``: A float. If the dimension of the calculation is not ``"cube"``, this
+            gives the value at which the slice is calculated.
+            
+            - For ``self.dimension = "sliceEk"``, ``const`` corresponds to the
+            :math:`\phi` axis. Defaults to the mean :math:`\phi` value.
+            - For ``self.dimension = "slicekk"``, ``const`` corresponds to
+            :math:`E_k` axis. Defaults to the Fermi energy.
+
+        - ``domain``: An object containing information about offset angles for
+            calculating offset domains.
+        
+        *Saved args*:
+
+        - ``arpes.intensity``: A numpy array with shape specified by ``arpes.dimension``.
+
+            - ``cube``: :math:`M\times N_{pts}^x \times N_{pts}^y`
+            - ``sliceEk``: :math:`M\times N_{pts}^x`
+            - ``slicekk``: :math:`1\times N_{pts}^x \times N_{pts}^y`
+        - ``arpes.bkgd``: A numpy array with the same shape as ``arpes.intensity``. Initialized as zeros.
+        - ``arpes.response``: A numpy array with the same shape as ``arpes.intensity``. Initialized as ones.
+    
+        *Returned args*:
+
+        - If this function is used to calculate a domain, then the intensity is not saved, but simply returned.
+
+        """
+
         hbar=6.626070040e-34/(2*np.pi)
         me=9.11e-31
         eV=1.601e-19
@@ -530,9 +819,15 @@ class ARPES:
                 A_out= np.transpose(np.reshape(A_ang,(1, len(spec.kay),len(spec.kax))), (0,2,1))  
             if domain is None:
                 self.intensity = A_out/A_out.max()
+                self.bkgd = np.zeros(self.intensity.shape)
+                self.response = np.ones(self.intensity.shape)
             else:
-                return(A_out)
+                return(A_out)    
     def Make_kwarp_check(self):
+        """
+        This function checks the momentum-to-angle conversion by performing an angle-to-momentum conversion before interpolation to show that the original k-mesh is reporduced. 
+        It gives no outputs but plots the intensity before warping, after warping to angle, and after warping back to momentum space. 
+        """
         hbar=6.626070040e-34/(2*np.pi)
         me=9.11e-31
         eV=1.601e-19
@@ -620,6 +915,19 @@ class ARPES:
                        spec.specfun[0,:,:])
 
     def Make_statistics(self, exp):
+        r"""
+        This function takes the ARPES intensity :math:`I(\theta,\phi, \omega)` and uses it as a probability distribution function to generate a measured spectrum of $N$ electrons. 
+        
+        *args*:
+
+        - ``exp``: An object containing the experimental parameters. Defined via the ``aurelia_static_vars`` module.
+
+        *Saved args*:
+
+        - ``arpes.stats``: A numpy array containing the spectra generated by :math:`N_e` random electrons that has the same dimension as ``arpes.intensity``.
+        - ``arpes.dstats``: A numpy array containing the spectra generated by :math:`N_e` random electrons that has the same dimension as ``arpes.domains``.
+        
+        """
         A = (self.intensity + self.bkgd)*self.response      
         # Define probability density vector
         p0 = A / np.max(np.max(A))     
@@ -661,26 +969,7 @@ class ARPES:
             c2 = c2 / c2[-1]  # ensure cumulative is 1
             N2, bins = np.histogram(np.random.rand(exp.Ne), c2)
             dstats=np.reshape(N2, p02.shape)
-            edge=(1-1/self.spec.bands.edges)/2
-            indth=round(edge*self.intensity.shape[1])
-            self.th=self.th[indth:-indth]
-            if self.dimension == "sliceEk":                
-                dstats=dstats[ :, indth:-indth]
-                self.stats = self.stats[ :, indth:-indth]
-                self.intensity = self.intensity[ :, indth:-indth]
-                self.domain = self.domain[ :, indth:-indth]
-                self.response = self.response[ :, indth:-indth]
-                self.bkgd = self.bkgd[ :, indth:-indth]
-            elif self.dimension != "sliceEk":
-                indph=round(edge*self.intensity.shape[2])
-                self.ph=self.ph[indph:-indph]
-                dstats=dstats[ :, indth:-indth, indph:-indph]
-                self.stats = self.stats[ :, indth:-indth, indph:-indph]
-                self.intensity = self.intensity[ :, indth:-indth, indph:-indph]
-                self.domain = self.domain[ :, indth:-indth, indph:-indph]
-                self.response = self.response[ :, indth:-indth, indph:-indph]
-                self.bkgd = self.bkgd[ :, indth:-indth, indph:-indph]
-            self.dstats=dstats
+            self.dstats=dstats            
             if exp.detector["counting mode"] == "ADC":
                 if self.dimension == "sliceEk":                
                     dstats = np.apply_along_axis(lambda x: convolve(x, ADC,  mode='same'), axis=0, arr=dstats)
@@ -699,8 +988,60 @@ class ARPES:
                         dstats = np.apply_along_axis(lambda x: convolve(x, ADC,  mode='same'), axis=1, arr=dstats)
                         dstats = np.apply_along_axis(lambda x: convolve(x, ADC,  mode='same'), axis=2, arr=dstats)
                 self.dstats=np.round(dstats*(exp.Ne/np.sum(dstats))*len(x)).astype(int)
-                
+
+    def Crop_edges(self):
+        """
+        This function crops the edges of the simulation to remove artifacts.
+        """
+        if self.crop is False:
+            edge=(1-1/self.spec.bands.edges)/2
+            indth=round(edge*self.intensity.shape[1])
+            self.th=self.th[indth:-indth]
+            if self.dimension == "sliceEk":              
+                self.stats = self.stats[ :, indth:-indth]
+                self.intensity = self.intensity[ :, indth:-indth]            
+                self.response = self.response[ :, indth:-indth]
+                self.bkgd = self.bkgd[ :, indth:-indth]
+                if hasattr(self, 'domain'):
+                    self.domain = self.domain[ :, indth:-indth]
+                    self.dstats=self.dstats[ :, indth:-indth]
+            elif self.dimension != "sliceEk":
+                indph=round(edge*self.intensity.shape[2])
+                self.ph=self.ph[indph:-indph]            
+                self.stats = self.stats[ :, indth:-indth, indph:-indph]
+                self.intensity = self.intensity[ :, indth:-indth, indph:-indph]            
+                self.response = self.response[ :, indth:-indth, indph:-indph]
+                self.bkgd = self.bkgd[ :, indth:-indth, indph:-indph]
+                if hasattr(self, 'domain'):
+                    self.domain = self.domain[ :, indth:-indth, indph:-indph]
+                    self.dstats=self.dstats[ :, indth:-indth, indph:-indph]
+            self.crop = True
+        else:
+            print('Edges are already cropped.')
     def Make_quality_score(self, param = None):
+        r"""
+        This function provides a quality score for the spectra based on the metrics, feature sharpness, the number of electrons, the signal to background, and a total score.
+        
+        *args*:
+
+        - ``param``: A dictionary of the form ``param = {"threshold": [], "penalty": [], "weight": []}``. The fields are:
+
+            - ``param["threshold"]``: A numpy array of shape :math:`m \times 1` defining the
+            score brackets where each penalty is incurred. Default: [0.9, 0.7, 0.5, 0.3].
+            - ``param["penalty"]``: A numpy array of shape :math:`m \times 1` defining the penalty
+            amount incurred in each score bracket. Default: [1, 2, 3, 4].
+            - ``param["weight"]``: A numpy array of shape :math:`3 \times 1` defining the relative
+            weights of penalties for each metric. Default: [1, 1, 1].
+
+        *Saved args*:
+
+        - ``arpes.score``, a dictionary with the following fields:
+
+            - ``score["width"]``: Feature sharpness score, out of 1.
+            - ``score["bkgd"]``: Signal-to-background score, out of 1.
+            - ``score["counts"]``: Number of electrons score, out of 1.
+            - ``score["final"]``: Total score, out of 10.
+        """
         score = 10
         kB = 8.6196e-05
         if hasattr(self, 'domain'):
@@ -750,6 +1091,9 @@ class ARPES:
         print("Ne score:", np.round(Ne_score, 2),"/1")
         print("total score:", np.round(final_score),"/10")
     def print_variables(self):
+        """
+        Provides a summary of variables used to calculate the measured arpes spectra.
+        """
         print('ARPES dimension:', self.dimension)
         if self.dimension != 'cube':
             print('Slice const:', round(self.slice_const,2))
