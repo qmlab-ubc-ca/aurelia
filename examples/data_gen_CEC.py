@@ -3,15 +3,11 @@
 #The number of spectra generated is given by N_runs.
 #%%
 #Import libraries
-import os
-import sys
 import numpy as np
-sys.path.insert(0, os.path.abspath("..") + "\\aurelia")
-from aurelia_arpes import Bands, Spec, ARPES
-from aurelia_static_vars import mod, domain, experiment
-import matplotlib.pyplot as plt
-import aurelia_hdf5_saving as sv
-from aurelia_plots import show_spectra as sh
+from aurelia.aurelia_arpes import Bands, Spec, ARPES
+from aurelia.aurelia_static_vars import mod, domain, experiment
+from aurelia.aurelia_plots import show_spectra as sh
+from aurelia import aurelia_hdf5_saving as sv
 
 #%%
 #Define saving path
