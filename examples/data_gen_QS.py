@@ -2,6 +2,7 @@
 #%%
 #Import libraries
 import numpy as np
+import os
 from aurelia.aurelia_arpes import Bands, Spec, ARPES
 from aurelia.aurelia_static_vars import mod, domain, experiment
 from aurelia.aurelia_plots import show_spectra as sh
