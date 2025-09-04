@@ -198,6 +198,14 @@ These parameters are collected in the modifier object, which is defined in the <
 <span class="n">S</span><span class="o">.</span><span class="n">Make_specmod</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>The spectral function can be shown using the <code class="docutils literal notranslate"><span class="pre">aurelia_plots</span></code> module.
+Below is a simulation of spectral intensity for a system with rectangular (C2) symmetry, where <code class="docutils literal notranslate"><span class="pre">spec.dimension</span> <span class="pre">=</span> <span class="pre">&quot;cube&quot;</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">aurelia.aurelia_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_spectra</span> <span class="k">as</span> <span class="n">sh</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">Make_spec_plot</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/spec_cube_plot.png"><img alt="_images/spec_cube_plot.png" src="_images/spec_cube_plot.png" style="width: 500px;" />
+</a>
 </section>
 </section>
 <section id="simulate-arpes">
@@ -226,13 +234,24 @@ In this function, the background intensity is initialized as zeros, and the dete
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span><span class="o">.</span><span class="n">Make_angle_conv</span><span class="p">(</span><span class="n">const</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Here, if <code class="docutils literal notranslate"><span class="pre">arpes.dimension</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;sliceEk&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;slicekk&quot;</span></code>, the constant of the third dimension (<span class="math notranslate nohighlight">\(\phi\)</span> or <span class="math notranslate nohighlight">\(E_k\)</span>, respectively) must be given, or default values are used.
-To check that the warp is done correctly, we add a diagnostic that double checks the conversion from momentum to angle.</p>
+<p>Here, if <code class="docutils literal notranslate"><span class="pre">arpes.dimension</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;sliceEk&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;slicekk&quot;</span></code>, the constant of the third dimension (<span class="math notranslate nohighlight">\(\phi\)</span> or <span class="math notranslate nohighlight">\(E_k\)</span>, respectively) must be given, or default values are used.</p>
+<p>The spectral function can be shown using the <code class="docutils literal notranslate"><span class="pre">aurelia_plots</span></code> module.
+Below is a simulation of the arpes intensity for a system with square (C4) symmetry, where <code class="docutils literal notranslate"><span class="pre">arpes.dimension</span> <span class="pre">=</span> <span class="pre">&quot;cube&quot;</span></code>. We’ve rotated the spectra by 45 degrees in the azimuth for easy visualization.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">aurelia.aurelia_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_spectra</span> <span class="k">as</span> <span class="n">sh</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">Make_arpes_plot</span><span class="p">(</span><span class="n">arpes</span><span class="p">,</span> <span class="n">exp</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/arpes_cube_plot.png"><img alt="_images/arpes_cube_plot.png" src="_images/arpes_cube_plot.png" style="width: 500px;" />
+</a>
+<p>To check that the warp is done correctly, we add a diagnostic that double checks the conversion from momentum to angle.
+Note that this function can only be run if <code class="docutils literal notranslate"><span class="pre">spec.dimension</span> <span class="pre">=</span> <span class="pre">arpes.dimension</span> <span class="pre">=</span> <span class="pre">&quot;slicekk&quot;</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span><span class="o">.</span><span class="n">Make_kwarp_check</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Here, the angle mesh is first calculated as in <code class="docutils literal notranslate"><span class="pre">arpes.Make_angle_conv()</span></code>, then, we skip the interpolation and simply do the angle-to-momentum conversion, which is typically done for ARPES experiments.
 The warp is done forwards and backwards to show that the original k-mesh is reproduced. See <a class="reference internal" href="derivations.html#derivations"><span class="std std-ref">Derivations</span></a> for details.</p>
+<a class="reference internal image-reference" href="_images/kwarp_check.png"><img alt="_images/kwarp_check.png" src="_images/kwarp_check.png" style="width: 500px;" />
+</a>
 </section>
 <section id="add-electron-counting-statistics">
 <h3>Add electron counting statistics<a class="headerlink" href="#add-electron-counting-statistics" title="Link to this heading"></a></h3>
@@ -244,7 +263,14 @@ The warp is done forwards and backwards to show that the original k-mesh is repr
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span><span class="o">.</span><span class="n">Crop_edges</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Note that the above function is called in the plotting function, so one does not need to crop it before plotting.</p>
+<p>Note that the above function is called in the plotting function, so one does not need to crop it before plotting.
+Below is a simulation of the arpes statistics for a system with hexagonal (C3) symmetry, where <code class="docutils literal notranslate"><span class="pre">arpes.dimension</span> <span class="pre">=</span> <span class="pre">&quot;slicekk&quot;</span></code>. We’ve rotated the spectra by 30 degrees in the azimuth for easy visualization.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">aurelia.aurelia_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_spectra</span> <span class="k">as</span> <span class="n">sh</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">Make_stats_plot</span><span class="p">(</span><span class="n">arpes</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/stats_slice_plot.png"><img alt="_images/stats_slice_plot.png" src="_images/stats_slice_plot.png" style="width: 500px;" />
+</a>
 </section>
 </section>
 </section>

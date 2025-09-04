@@ -10,7 +10,6 @@ from aurelia.aurelia_static_vars import mod, domain, experiment
 from aurelia.aurelia_plots import show_spectra as sh
 from aurelia import aurelia_hdf5_saving as sv
 
-#%%
 #Define saving path
 path = os.path.join(".", "data_QS")
 os.makedirs("data_QS", exist_ok=True)
@@ -20,7 +19,7 @@ N_runs=1
 det={"response":'center', "sensitivity": np.random.uniform(0.5,1),\
       "type":'HA', "slit": "horizontal", "counting mode":"ADC"}
 #Number of points in for theta, phi
-Npts_in=[500, 150]
+Npts_in=[300, 300]
 #Input matrix elements
 ME_in = {"type": ['poly','symm','rot']}
 #Experimental offset angles
@@ -45,16 +44,16 @@ for i in range(N_runs):
     spec.Make_specfun(m)
     spec.Make_specmod(m)
     spec.print_variables()
-    #sh.Make_spec_plot(spec)
+    sh.Make_spec_plot(spec)
 
     #Calculate experimental arpes spectra
     ang_in={"th":np.deg2rad([-15,15]),\
             "ph":np.deg2rad([-10-np.random.randint(10),10+np.random.randint(10)])}
-    exp=experiment(spec, detector=det, bkgd=bg, Ne=10**6)
-    arpes=ARPES(spec, exp, ang_lim=ang_in)
+    exp=experiment(spec, detector=det, bkgd=bg, Ne=10**6, angles = {"th0": np.radians(0), "ph0": np.radians(0), "az0": np.radians(30)})
+    arpes=ARPES(spec, exp, ang_lim=ang_in, dimension = "slicekk")
     arpes.Make_angle_conv()
-    #sh.Make_arpes_plot(arpes,exp)
-
+    sh.Make_arpes_plot(arpes,exp)
+    
     #Add experimental artifacts
     arpes=exp.Make_bkgd(arpes)
     arpes=exp.Make_detector_responsivity(arpes)
@@ -66,3 +65,5 @@ for i in range(N_runs):
     #print(i)
     #filename='arpesFS_'+str(i)+'.h5'
     #sv.save_class_to_hdf5(arpes,path,filename)
+
+# %%

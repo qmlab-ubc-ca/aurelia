@@ -94,7 +94,15 @@ Finally, we calculate the photoemission intensity and add the resolution broaden
   S.Make_specfun(m)
   S.Make_specmod(m)
 
+The spectral function can be shown using the ``aurelia_plots`` module.
+Below is a simulation of spectral intensity for a system with rectangular (C2) symmetry, where ``spec.dimension = "cube"``.
+::
 
+  from aurelia.aurelia_plots import show_spectra as sh
+  sh.Make_spec_plot(spec)
+
+.. image:: images/spec_cube_plot.png
+   :width: 500
 
 Simulate ARPES
 ==============
@@ -130,15 +138,31 @@ In this function, the background intensity is initialized as zeros, and the dete
 ::
 
   arpes.Make_angle_conv(const=0)
-
+   
 Here, if ``arpes.dimension`` is ``"sliceEk"`` or ``"slicekk"``, the constant of the third dimension (:math:`\phi` or :math:`E_k`, respectively) must be given, or default values are used.
-To check that the warp is done correctly, we add a diagnostic that double checks the conversion from momentum to angle. 
 
+The spectral function can be shown using the ``aurelia_plots`` module.
+Below is a simulation of the arpes intensity for a system with square (C4) symmetry, where ``arpes.dimension = "cube"``. We've rotated the spectra by 45 degrees in the azimuth for easy visualization.
+::
+
+  from aurelia.aurelia_plots import show_spectra as sh
+  sh.Make_arpes_plot(arpes, exp)
+
+.. image:: images/arpes_cube_plot.png
+   :width: 500
+
+
+To check that the warp is done correctly, we add a diagnostic that double checks the conversion from momentum to angle. 
+Note that this function can only be run if ``spec.dimension = arpes.dimension = "slicekk"``.
 ::
 
   arpes.Make_kwarp_check()
 Here, the angle mesh is first calculated as in ``arpes.Make_angle_conv()``, then, we skip the interpolation and simply do the angle-to-momentum conversion, which is typically done for ARPES experiments. 
 The warp is done forwards and backwards to show that the original k-mesh is reproduced. See :ref:`derivations` for details.
+
+.. image:: images/kwarp_check.png
+   :width: 500
+
 
 Add electron counting statistics
 --------------------------------
@@ -155,4 +179,12 @@ Then we crop the edges to remove artifacts.
   
   arpes.Crop_edges()
 
-Note that the above function is called in the plotting function, so one does not need to crop it before plotting.
+Note that the above function is called in the plotting function, so one does not need to crop it before plotting. 
+Below is a simulation of the arpes statistics for a system with hexagonal (C3) symmetry, where ``arpes.dimension = "slicekk"``. We've rotated the spectra by 30 degrees in the azimuth for easy visualization.
+::
+
+  from aurelia.aurelia_plots import show_spectra as sh
+  sh.Make_stats_plot(arpes)
+
+.. image:: images/stats_slice_plot.png
+   :width: 500

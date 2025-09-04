@@ -439,7 +439,7 @@ class experiment:
             Poly =  np.polynomial.polynomial.polyval2d(x, y, coeffs)
             Poly = self.bkgd["polyA"] * Amp * (Poly-np.min(Poly))/np.abs(np.max(Poly))
             if arpes.dimension =='cube':
-                Poly=np.stack([Poly]*arpes.Ek.shape[0], axis=1)
+                Poly=np.stack([Poly]*arpes.Ek.shape[0], axis=0)
             bkgd = bkgd + Poly
         arpes.bkgd=bkgd
         return(arpes)
