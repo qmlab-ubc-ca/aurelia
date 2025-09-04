@@ -12,22 +12,26 @@ One actually does not need any input to initialize the object *Bands*, the reaso
 ::
 
     B = Bands()
+
 However, user may alternatively specify the symmetry, momentum space limits, number of bands, and number of points in the calculation here. An example is shown below:
 
 ::
 
     B = Bands(Npts = [200, 100], symmetry = 'square', klim = np.array([[-1.2,-1], [1.2, 1]],
     Nbands = np.random.randint(1,5)), warp = 'yes', edges=1.25)
+
 Following this, one can create the k-path and the tight-binding calculation (see :ref:`derivations` for details).:
 ::
 
     B.Make_kpath()
     B.Make_bands()
+
 Alternatively, one can import the band dispersion itself from an external file:
 ::
 
   B = Bands()
   B.Import_bands(filename = 'Graphene_bands.csv')      
+
 In which case the default inputs will be fetched from the file itself and overwritten with the correct values from the file. 
 
 Calculate Spectra
@@ -36,6 +40,7 @@ The object *Spec* calculates the photoemission spectra one would expect from the
 ::
 
   S = Spec(B)
+
 Additionally, one can define the dimension of the calculation and the energy dimension :math:`\omega`.
 The dimension input is a string. Three modes are available, "cube", "sliceEk", and "slicekk", corresponding to 3D, dispersion, and Fermi-surface cuts.
 These modes are defined for computational time and file size considerations. For instance:
@@ -157,6 +162,7 @@ Note that this function can only be run if ``spec.dimension = arpes.dimension = 
 ::
 
   arpes.Make_kwarp_check()
+
 Here, the angle mesh is first calculated as in ``arpes.Make_angle_conv()``, then, we skip the interpolation and simply do the angle-to-momentum conversion, which is typically done for ARPES experiments. 
 The warp is done forwards and backwards to show that the original k-mesh is reproduced. See :ref:`derivations` for details.
 
