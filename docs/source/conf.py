@@ -47,7 +47,16 @@ extensions = [
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+html_title = "Aurelia — MengXing Na"
+html_short_title = "Aurelia"
 
+# Add meta tags for SEO
+html_context = {
+    "description": "Aurelia — Python library for ARPES simulations and machine-learning analysis, developed by MengXing Na and Matteo Michiardi",
+    "keywords": "MengXing Na, Aurelia, ARPES, simulation, machine-learning",
+}
+# Ensure search index works
+html_search_language = "en"
 html_theme_options = {
 	'collapse_navigation':True,
     'logo_only':True
