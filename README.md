@@ -25,7 +25,8 @@ pip install aurelia
 ## Usage
 
 See the [examples](examples/) folder for sample scripts to get started.  
-Full documentation is available on the [Wiki](https://github.com/qmlab-ubc-ca/aurelia/wiki).
+Full documentation is available on [ReadTheDocs](https://aurelia-arpes.readthedocs.io/en/latest/).
+Simple instructions available on [Wiki](https://github.com/qmlab-ubc-ca/aurelia/wiki).
 
 ## License
 
