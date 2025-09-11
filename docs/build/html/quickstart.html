@@ -89,19 +89,18 @@
   <section id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h1>
 <p>Welcome to <strong>aurelia</strong> Quick Start!
-This guide demonstrates how to use the Aurelia package to simulate ARPES spectra, including realistic experimental artifacts.</p>
+This guide demonstrates how to use the Aurelia package to simulate ARPES spectra, including realistic experimental artifacts.
+The <strong>aurelia</strong> workflow is briefly illustrated below:</p>
+<a class="reference internal image-reference" href="_images/aurelia_workflow.png"><img alt="_images/aurelia_workflow.png" src="_images/aurelia_workflow.png" style="width: 600px;" />
+</a>
 <section id="step-1-import-aurelia-classes">
 <h2>Step 1: Import aurelia classes<a class="headerlink" href="#step-1-import-aurelia-classes" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="c1"># Add the aurelia package to the path (if not installed in editable mode)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">aurelia&quot;</span><span class="p">)</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia_arpes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bands</span><span class="p">,</span> <span class="n">Spec</span><span class="p">,</span> <span class="n">ARPES</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia_static_vars</span><span class="w"> </span><span class="kn">import</span> <span class="n">mod</span><span class="p">,</span> <span class="n">experiment</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_spectra</span> <span class="k">as</span> <span class="n">sh</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia.aurelia_arpes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bands</span><span class="p">,</span> <span class="n">Spec</span><span class="p">,</span> <span class="n">ARPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia.aurelia_static_vars</span><span class="w"> </span><span class="kn">import</span> <span class="n">mod</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">experiment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia.aurelia_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_spectra</span> <span class="k">as</span> <span class="n">sh</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aurelia</span><span class="w"> </span><span class="kn">import</span> <span class="n">aurelia_hdf5_saving</span> <span class="k">as</span> <span class="n">sv</span>
 </pre></div>
 </div>
 </section>

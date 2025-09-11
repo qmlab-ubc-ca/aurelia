@@ -3,22 +3,22 @@ Quickstart
 
 Welcome to **aurelia** Quick Start!  
 This guide demonstrates how to use the Aurelia package to simulate ARPES spectra, including realistic experimental artifacts.
+The **aurelia** workflow is briefly illustrated below: 
+
+.. image:: images/aurelia_workflow.png
+   :width: 600
 
 Step 1: Import aurelia classes
 ------------------------------
 
 .. code-block:: python
 
-    import sys
+    import numpy as np
     import os
-    import numpy as np 
-
-    # Add the aurelia package to the path (if not installed in editable mode)
-    sys.path.insert(0, os.path.abspath("..") + "\\aurelia")
-
-    from aurelia_arpes import Bands, Spec, ARPES
-    from aurelia_static_vars import mod, experiment
-    from aurelia_plots import show_spectra as sh
+    from aurelia.aurelia_arpes import Bands, Spec, ARPES
+    from aurelia.aurelia_static_vars import mod, domain, experiment
+    from aurelia.aurelia_plots import show_spectra as sh
+    from aurelia import aurelia_hdf5_saving as sv
 
 Step 2: Define the bands
 ------------------------
